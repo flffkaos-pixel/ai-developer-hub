@@ -7,6 +7,7 @@ nav { background: #12122a; border-bottom: 1px solid #2a2a4a; position: sticky; t
 .nav-links { display: flex; gap: 2rem; }
 .nav-links a { color: #a0a0c0; text-decoration: none; font-size: 0.95rem; }
 .nav-links a:hover { color: #7c3aed; }
+.nav-links a.active { color: #7c3aed; }
 
 main { flex: 1; }
 .container { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }

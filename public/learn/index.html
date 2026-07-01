@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curriculum - AI Developer Hub</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+  .breadcrumb { color: #a0a0c0; margin-bottom: 1rem; font-size: 0.9rem; }
+  .breadcrumb span { cursor: pointer; }
+  .breadcrumb span:hover { color: #7c3aed; }
+  .sb-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .sb-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 12px; padding: 1.2rem; cursor: pointer; transition: all 0.2s; }
+  .sb-item:hover { border-color: #7c3aed; }
+  .sb-item h3 { margin-bottom: 0.3rem; font-size: 1rem; }
+  .sb-item .count { color: #606080; font-size: 0.85rem; }
+  .block-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.8rem; }
+  .block-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 1rem; cursor: pointer; }
+  .block-item:hover { border-color: #7c3aed; }
+  .block-item h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .challenge-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .challenge-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 0.8rem 1rem; cursor: pointer; }
+  .challenge-item:hover { border-color: #7c3aed; }
+  .challenge-detail { background: #12122a; border: 1px solid #2a2a4a; border-radius: 12px; padding: 2rem; line-height: 1.8; }
+  .challenge-detail h2 { margin-bottom: 1rem; }
+  .challenge-detail pre { background: #1a1a2e; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+  .back-btn { background: none; border: 1px solid #2a2a4a; color: #a0a0c0; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; margin-bottom: 1rem; }
+  .back-btn:hover { border-color: #7c3aed; color: #7c3aed; }
+  .loading { text-align: center; padding: 3rem; color: #606080; }
+  code { background: #1a1a2e; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">AI Developer Hub</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/courses">Courses</a>
+        <a href="/learn" class="active">Curriculum</a>
+        <a href="/chat">AI Chat</a>
+        <a href="/tools">Tools</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="breadcrumb" id="breadcrumb">
+      <span onclick="showSuperblocks()">Curriculum</span>
+    </div>
+    <div id="app"><div class="loading">Loading curriculum...</div></div>
+  </main>
+
+  <footer>
+    <p>AI Developer Hub &mdash; Curriculum from <a href="https://github.com/freeCodeCamp/freeCodeCamp">freeCodeCamp</a> (BSD-3-Clause).</p>
+  </footer>
+
+  <script>
+  let curriculumIndex = null;
+  let superblockCache = {};
+
+  async function loadIndex() {
+    const res = await fetch('/data/index.json');
+    curriculumIndex = await res.json();
+    showSuperblocks();
+  }
+
+  async function loadSuperblock(name) {
+    if (!superblockCache[name]) {
+      const res = await fetch(`/data/sb-${name}.json`);
+      superblockCache[name] = await res.json();
+    }
+    return superblockCache[name];
+  }
+
+  function showSuperblocks() {
+    const app = document.getElementById('app');
+    document.getElementById('breadcrumb').innerHTML = '<span onclick="showSuperblocks()">Curriculum</span>';
+    app.innerHTML = `<div class="sb-list">${curriculumIndex.superblocks.map(sb =>
+      `<div class="sb-item" onclick="showBlocks('${sb.name}')">
+        <h3>${sb.name.replace(/-/g, ' ')}</h3>
+        <div class="count">${sb.blocks.length} blocks</div>
+      </div>`
+    ).join('')}</div>`;
+  }
+
+  async function showBlocks(sbName) {
+    const app = document.getElementById('app');
+    document.getElementById('breadcrumb').innerHTML =
+      `<span onclick="showSuperblocks()">Curriculum</span> &rsaquo; <span>${sbName.replace(/-/g, ' ')}</span>`;
+    app.innerHTML = '<div class="loading">Loading...</div>';
+
+    const sb = await loadSuperblock(sbName);
+    const blocks = sb.blocks.filter(b => b.challenges.length > 0);
+    app.innerHTML = `<div class="block-list">${blocks.map(b =>
+      `<div class="block-item" onclick="showChallenges('${sbName}','${b.name}')">
+        <h4>${b.name.replace(/-/g, ' ')}</h4>
+        <div class="count">${b.challenges.length} challenges</div>
+      </div>`
+    ).join('')}</div>`;
+  }
+
+  async function showChallenges(sbName, blockName) {
+    const app = document.getElementById('app');
+    document.getElementById('breadcrumb').innerHTML =
+      `<span onclick="showSuperblocks()">Curriculum</span> &rsaquo;
+       <span onclick="showBlocks('${sbName}')">${sbName.replace(/-/g, ' ')}</span> &rsaquo;
+       <span>${blockName.replace(/-/g, ' ')}</span>`;
+    app.innerHTML = '<div class="loading">Loading...</div>';
+
+    const sb = await loadSuperblock(sbName);
+    const block = sb.blocks.find(b => b.name === blockName);
+    app.innerHTML = `<div class="challenge-list">${block.challenges.slice(0, 100).map((ch, i) =>
+      `<div class="challenge-item" onclick="showChallenge('${sbName}','${blockName}',${i})">
+        ${i+1}. ${ch.title}
+      </div>`
+    ).join('')}</div>`;
+  }
+
+  async function showChallenge(sbName, blockName, idx) {
+    const app = document.getElementById('app');
+    const sb = await loadSuperblock(sbName);
+    const block = sb.blocks.find(b => b.name === blockName);
+    const ch = block.challenges[idx];
+    if (!ch) return;
+
+    app.innerHTML = `<button class="back-btn" onclick="showChallenges('${sbName}','${blockName}')">← Back</button>
+      <div class="challenge-detail">
+        <h2>${ch.title}</h2>
+        <div>${ch.description ? ch.description.replace(/\n/g, '<br>') : '<em>No description</em>'}</div>
+        ${ch.seed ? `<h3 style="margin-top:1.5rem">Seed Code</h3><pre>${ch.seed.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>` : ''}
+        ${ch.tests.length ? `<h3 style="margin-top:1.5rem">Tests</h3>${ch.tests.map(t => `<pre>${t.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>`).join('')}` : ''}
+      </div>`;
+  }
+
+  loadIndex();
+  </script>
+</body>
+</html>

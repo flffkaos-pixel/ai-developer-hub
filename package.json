@@ -4,6 +4,7 @@
   "description": "AI Developer Hub - Cloudflare Pages + WebLLM",
   "private": true,
   "scripts": {
+    "build:curriculum": "node scripts/build-curriculum.js",
     "dev": "npx wrangler pages dev public --port 3000",
     "deploy": "npx wrangler pages deploy public"
   },
