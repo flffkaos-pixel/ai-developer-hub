@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chat - AI Developer Hub</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">AI Developer Hub</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/courses">Courses</a>
+        <a href="/chat">AI Chat</a>
+        <a href="/tools">Tools</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1>AI Coding Assistant</h1>
+    <p class="subtitle">Powered by Gemma 2 2B — runs entirely in your browser, 100% free</p>
+
+    <div class="model-status" id="modelStatus">⏳ Loading AI model (first time may take a moment)...</div>
+
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="message ai">
+          <div class="msg-content">Hello! I'm your AI coding assistant. Ask me anything about programming.</div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Ask about code, debugging, concepts..." />
+        <button id="chatSend">Send</button>
+      </div>
+    </div>
+
+    <div class="suggestions">
+      <button class="chip" data-msg="What is a closure in JavaScript?">Explain closures</button>
+      <button class="chip" data-msg="Help me debug a Python error">Debug help</button>
+      <button class="chip" data-msg="Best way to learn React?">Learning path</button>
+      <button class="chip" data-msg="Explain async/await">Async/await</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>AI Developer Hub &mdash; Based on freeCodeCamp (BSD-3-Clause). AI runs locally via WebLLM.</p>
+  </footer>
+
+  <script type="module">
+import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
+const modelId = "gemma-2-2b-it-q4f16_1-MLC";
+const status = document.getElementById('modelStatus');
+const input = document.getElementById('chatInput');
+const sendBtn = document.getElementById('chatSend');
+const messages = document.getElementById('chatMessages');
+
+let engine = null;
+
+async function initEngine() {
+  status.textContent = '⏳ Downloading model (first time ~1.5GB, then cached)...';
+  engine = await CreateMLCEngine(modelId, {
+    initProgressCallback: (p) => {
+      if (p.progress < 1) {
+        status.textContent = `⏳ Loading... ${(p.progress * 100).toFixed(0)}%`;
+      }
+    }
+  });
+  status.textContent = '✅ AI model ready — ask anything!';
+  status.className = 'model-status ready';
+}
+initEngine();
+
+function addMessage(text, isUser) {
+  const div = document.createElement('div');
+  div.className = `message ${isUser ? 'user' : 'ai'}`;
+  div.innerHTML = `<div class="msg-content">${text}</div>`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+async function sendMessage(msg) {
+  if (!msg.trim() || !engine) return;
+  addMessage(msg, true);
+  input.value = '';
+  addMessage('Thinking...', false);
+
+  try {
+    const reply = await engine.chat.completions.create({
+      messages: [
+        { role: "system", content: "You are a helpful coding assistant. Answer concisely in Korean." },
+        { role: "user", content: msg }
+      ],
+      max_tokens: 512,
+      temperature: 0.7
+    });
+    messages.lastElementChild.querySelector('.msg-content').textContent =
+      reply.choices[0].message.content || '(no response)';
+  } catch (e) {
+    messages.lastElementChild.querySelector('.msg-content').textContent =
+      'Error: ' + e.message;
+  }
+}
+
+sendBtn.onclick = () => sendMessage(input.value);
+input.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(input.value); };
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.onclick = () => sendMessage(chip.dataset.msg);
+});
+</script>
+</body>
+</html>

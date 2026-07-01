@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courses - AI Developer Hub</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">AI Developer Hub</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/courses">Courses</a>
+        <a href="/chat">AI Chat</a>
+        <a href="/tools">Tools</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1>Courses</h1>
+    <p class="subtitle">Interactive coding curriculum powered by freeCodeCamp + AI enhancements</p>
+
+    <div class="course-grid">
+      <div class="course-card">
+        <h3>Responsive Web Design</h3>
+        <p>HTML, CSS, Flexbox, Grid - Build responsive websites</p>
+        <span class="badge">Beginner</span>
+        <div class="course-meta">300+ hours · 20 projects</div>
+        <a href="https://www.freecodecamp.org/learn/responsive-web-design/" target="_blank" class="btn btn-sm">Start</a>
+      </div>
+      <div class="course-card">
+        <h3>JavaScript Algorithms</h3>
+        <p>Core JS, Data Structures, Algorithm challenges</p>
+        <span class="badge">Beginner</span>
+        <div class="course-meta">200+ hours · 100+ challenges</div>
+        <a href="https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/" target="_blank" class="btn btn-sm">Start</a>
+      </div>
+      <div class="course-card">
+        <h3>Front End Libraries</h3>
+        <p>React, Redux, Bootstrap, jQuery</p>
+        <span class="badge">Intermediate</span>
+        <div class="course-meta">200+ hours · 10 projects</div>
+        <a href="https://www.freecodecamp.org/learn/front-end-development-libraries/" target="_blank" class="btn btn-sm">Start</a>
+      </div>
+      <div class="course-card">
+        <h3>Backend & APIs</h3>
+        <p>Node.js, Express, MongoDB, Mongoose</p>
+        <span class="badge">Intermediate</span>
+        <div class="course-meta">200+ hours · 10 projects</div>
+        <a href="https://www.freecodecamp.org/learn/back-end-development-and-apis/" target="_blank" class="btn btn-sm">Start</a>
+      </div>
+      <div class="course-card">
+        <h3>Python & Data Science</h3>
+        <p>Python, NumPy, Pandas, Data visualization</p>
+        <span class="badge">Intermediate</span>
+        <div class="course-meta">200+ hours · 15 projects</div>
+        <a href="https://www.freecodecamp.org/learn/data-analysis-with-python/" target="_blank" class="btn btn-sm">Start</a>
+      </div>
+      <div class="course-card highlighted">
+        <h3>🤖 AI-Powered Lesson Generator</h3>
+        <p>Generate custom lessons on any topic at any level</p>
+        <span class="badge">AI Feature</span>
+        <div class="course-meta">Personalized · Instant</div>
+        <button class="btn btn-sm" onclick="showGenerator()">Generate</button>
+      </div>
+    </div>
+
+    <section class="lesson-generator" id="lessonGenerator" style="display:none">
+      <h2>AI Lesson Generator</h2>
+      <div class="gen-form">
+        <input type="text" id="topicInput" placeholder="Topic (e.g. React Hooks, Python decorators)" />
+        <select id="levelSelect">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+        <button onclick="generateLesson()" class="btn btn-primary">Generate Lesson</button>
+      </div>
+      <div id="lessonOutput" class="lesson-output"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>AI Developer Hub &mdash; Based on <a href="https://github.com/freeCodeCamp/freeCodeCamp">freeCodeCamp</a> (BSD-3-Clause).</p>
+  </footer>
+
+  <script>
+    function showGenerator() {
+      const gen = document.getElementById('lessonGenerator');
+      gen.style.display = gen.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function generateLesson() {
+      const topic = document.getElementById('topicInput').value || 'Programming';
+      const level = document.getElementById('levelSelect').value;
+      const output = document.getElementById('lessonOutput');
+      output.innerHTML = '<p>Generating lesson...</p>';
+      try {
+        const res = await fetch('/api/lessons', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, level })
+        });
+        const data = await res.json();
+        output.innerHTML = `<h3>${data.title}</h3><div class="markdown">${data.content.replace(/\n/g, '<br>')}</div>`;
+      } catch {
+        output.innerHTML = '<p>Error generating lesson. Try again.</p>';
+      }
+    }
+  </script>
+</body>
+</html>

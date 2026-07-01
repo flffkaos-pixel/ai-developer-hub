@@ -1,15 +1,13 @@
 {
   "name": "ai-developer-hub",
   "version": "1.0.0",
-  "description": "AI Developer Hub - AI-powered developer learning platform",
-  "main": "server.js",
+  "description": "AI Developer Hub - Cloudflare Pages + WebLLM",
+  "private": true,
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "npx wrangler pages dev public --port 3000",
+    "deploy": "npx wrangler pages deploy public"
   },
-  "dependencies": {
-    "express": "^4.21.0",
-    "ejs": "^3.1.10",
-    "cors": "^2.8.5"
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }

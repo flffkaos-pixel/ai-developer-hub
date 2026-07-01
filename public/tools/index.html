@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tools - AI Developer Hub</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">AI Developer Hub</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/courses">Courses</a>
+        <a href="/chat">AI Chat</a>
+        <a href="/tools">Tools</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1>Developer Tools</h1>
+    <p class="subtitle">AI-powered tools to supercharge your development workflow</p>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-icon">💬</div>
+        <h3>AI Prompt Library</h3>
+        <p>Curated prompts for coding, debugging, code review, and learning</p>
+        <button class="btn btn-sm" onclick="showSection('prompts')">Browse</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">📋</div>
+        <h3>Code Snippet Generator</h3>
+        <p>Generate boilerplate code for any framework or language</p>
+        <button class="btn btn-sm" onclick="showSection('snippet')">Use</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🎯</div>
+        <h3>Learning Roadmap</h3>
+        <p>Get a personalized learning path for any tech stack</p>
+        <button class="btn btn-sm" onclick="showSection('roadmap')">Generate</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">📦</div>
+        <h3>Open Source Finder</h3>
+        <p>Find beginner-friendly GitHub projects to contribute to</p>
+        <button class="btn btn-sm" onclick="showSection('oss')">Explore</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🚀</div>
+        <h3>Project Generator</h3>
+        <p>Generate full project structures with AI</p>
+        <button class="btn btn-sm" onclick="showSection('project')">Start</button>
+      </div>
+    </div>
+
+    <div id="toolDetail" class="tool-detail" style="display:none">
+      <h2 id="toolTitle"></h2>
+      <div id="toolContent"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>AI Developer Hub &mdash; Based on freeCodeCamp (BSD-3-Clause).</p>
+  </footer>
+
+  <script>
+    const tools = {
+      prompts: {
+        title: 'AI Prompt Library',
+        content: `<div class="prompt-list">
+          <div class="prompt-item"><strong>Code Review:</strong> "Review this code for bugs, performance issues, and best practices: [paste code]"</div>
+          <div class="prompt-item"><strong>Learn X:</strong> "Explain [topic] as if I'm a beginner. Include examples and analogies."</div>
+          <div class="prompt-item"><strong>Debug:</strong> "I'm getting [error] in [context]. Here's my code: [code]. What's wrong?"</div>
+          <div class="prompt-item"><strong>Refactor:</strong> "Refactor this code to be more readable and maintainable: [code]"</div>
+          <div class="prompt-item"><strong>Architecture:</strong> "Design a [type] system for [requirement]. Consider scalability and edge cases."</div>
+        </div>`
+      },
+      snippet: {
+        title: 'Code Snippet Generator',
+        content: `<button class="btn" onclick="document.getElementById('snippetOutput').innerText = '// React component\nfunction App() {\n  return <div>Hello World</div>;\n}\n\nexport default App;'">Generate React Component</button>
+        <button class="btn" onclick="document.getElementById('snippetOutput').innerText = '// Express server\nconst express = require(\"express\");\nconst app = express();\napp.get(\"/\", (req, res) => res.send(\"Hello\"));\napp.listen(3000);'">Generate Express Server</button>
+        <pre id="snippetOutput" style="margin-top:1rem;background:#1a1a2e;padding:1rem;border-radius:8px;color:#e4e4e4">Select a template above</pre>`
+      },
+      roadmap: {
+        title: 'Learning Roadmap Generator',
+        content: `<div class="roadmap-form">
+          <input type="text" placeholder="Target: Full-Stack Developer, AI Engineer, DevOps..." id="roadmapTarget" />
+          <select id="roadmapTimeline">
+            <option value="3">3 months</option>
+            <option value="6">6 months</option>
+            <option value="12">12 months</option>
+          </select>
+          <button class="btn btn-primary" onclick="alert('Personalized roadmap would appear here with weekly milestones.')">Generate</button>
+        </div>`
+      },
+      oss: {
+        title: 'Open Source Finder',
+        content: `<p>Find beginner-friendly open source projects:</p>
+        <div class="oss-links">
+          <a href="https://github.com/search?q=label%3A%22good+first+issue%22+language%3Ajavascript&type=issues" target="_blank" class="btn">Good First Issues (JS)</a>
+          <a href="https://github.com/freeCodeCamp/freeCodeCamp/labels/good%20first%20issue" target="_blank" class="btn">freeCodeCamp Issues</a>
+          <a href="https://up-for-grabs.net" target="_blank" class="btn">Up For Grabs</a>
+        </div>`
+      },
+      project: {
+        title: 'AI Project Generator',
+        content: `<div>
+          <input type="text" placeholder="Project idea (e.g. Todo app with React + Firebase)" style="width:100%;margin-bottom:0.5rem" />
+          <button class="btn btn-primary" onclick="alert('Full project structure with files, code, and instructions would appear here.')">Generate Project</button>
+        </div>`
+      }
+    };
+
+    function showSection(id) {
+      const detail = document.getElementById('toolDetail');
+      const t = tools[id];
+      if (!t) return;
+      document.getElementById('toolTitle').textContent = t.title;
+      document.getElementById('toolContent').innerHTML = t.content;
+      detail.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
