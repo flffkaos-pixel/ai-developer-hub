@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - AI Developer Hub</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/nav-auth.js"></script>
+  <style>
+  .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; }
+  .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #3b82f6); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; font-weight: bold; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: #12122a; border: 1px solid #2a2a4a; border-radius: 12px; padding: 1.5rem; text-align: center; }
+  .stat-card .value { font-size: 2rem; font-weight: bold; color: #7c3aed; }
+  .stat-card .label { color: #a0a0c0; font-size: 0.9rem; margin-top: 0.3rem; }
+  .xp-bar-wrap { background: #2a2a4a; border-radius: 10px; height: 12px; overflow: hidden; margin: 0.5rem 0; }
+  .xp-bar-fill { background: linear-gradient(90deg, #7c3aed, #3b82f6); height: 100%; border-radius: 10px; transition: width 0.5s; }
+  .badge-grid { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  .badge-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; position: relative; }
+  .badge-item.locked { opacity: 0.3; }
+  .badge-item .tooltip { display: none; position: absolute; bottom: -2rem; background: #1a1a2e; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; white-space: nowrap; }
+  .badge-item:hover .tooltip { display: block; }
+  .challenge-list { display: flex; flex-direction: column; gap: 0.4rem; max-height: 400px; overflow-y: auto; }
+  .challenge-row { background: #12122a; border: 1px solid #2a2a4a; border-radius: 6px; padding: 0.5rem 0.8rem; font-size: 0.85rem; display: flex; justify-content: space-between; }
+  .challenge-row .date { color: #606080; font-size: 0.75rem; }
+  .btn-logout { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+  .btn-logout:hover { background: #ef444422; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">AI Developer Hub</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/courses">Courses</a>
+        <a href="/learn">Curriculum</a>
+        <a href="/chat">AI Chat</a>
+        <a href="/tools">Tools</a>
+        <a href="/login" id="navAuth">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container" id="app">
+    <div class="loading">Loading profile...</div>
+  </main>
+
+  <script>
+  const BADGE_DEFS = {
+    first_challenge: { icon: '🌟', name: 'First Steps', desc: 'Complete your first challenge' },
+    '10_challenges': { icon: '🔥', name: 'Getting Started', desc: 'Complete 10 challenges' },
+    '50_challenges': { icon: '💪', name: 'Committed', desc: 'Complete 50 challenges' },
+    '100_challenges': { icon: '🏆', name: 'Century', desc: 'Complete 100 challenges' },
+    streak_7: { icon: '📅', name: 'Weekly Warrior', desc: '7-day streak' },
+    streak_30: { icon: '🔥', name: 'Unstoppable', desc: '30-day streak' }
+  };
+
+  async function load() {
+    const userData = localStorage.getItem('fcc_user');
+    const token = localStorage.getItem('fcc_token');
+    const app = document.getElementById('app');
+
+    if (!token || !userData) {
+      app.innerHTML = '<div style="text-align:center;padding:4rem"><h2>Not logged in</h2><p style="color:#a0a0c0;margin:1rem 0"><a href="/login">Login</a> or <a href="/register">Register</a></p></div>';
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    try {
+      const [progressRes, authRes] = await Promise.all([
+        fetch(`/api/progress?userId=${user.id}`),
+        fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'me', token }) })
+      ]);
+      const progressData = await progressRes.json();
+      const authData = await authRes.json();
+
+      if (authData.user) {
+        localStorage.setItem('fcc_user', JSON.stringify(authData.user));
+        user.xp = authData.user.xp;
+        user.level = authData.user.level;
+        user.streak = authData.user.streak;
+      }
+
+      const completed = progressData.completed || [];
+      const badges = progressData.badges || [];
+      const earnedBadges = new Set(badges.map(b => b.badge_type));
+      const xpInLevel = user.xp % 100;
+      const xpProgress = (xpInLevel / 100) * 100;
+
+      const allBadgeKeys = Object.keys(BADGE_DEFS);
+      // Also check streak-based badges
+      if (user.streak >= 7) earnedBadges.add('streak_7');
+      if (user.streak >= 30) earnedBadges.add('streak_30');
+
+      app.innerHTML = `
+        <div class="profile-header">
+          <div class="avatar">${user.email[0].toUpperCase()}</div>
+          <div>
+            <h2>${user.name || user.email}</h2>
+            <p style="color:#a0a0c0">${user.email}</p>
+          </div>
+          <button class="btn-logout" style="margin-left:auto" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="value">${user.xp}</div>
+            <div class="label">Total XP</div>
+          </div>
+          <div class="stat-card">
+            <div class="value">${user.level}</div>
+            <div class="label">Level</div>
+          </div>
+          <div class="stat-card">
+            <div class="value">${user.streak || 0}</div>
+            <div class="label">Day Streak</div>
+          </div>
+          <div class="stat-card">
+            <div class="value">${completed.length}</div>
+            <div class="label">Challenges</div>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom:0.5rem">Level ${user.level} — Progress to Level ${user.level + 1}</h3>
+        <div class="xp-bar-wrap"><div class="xp-bar-fill" style="width:${xpProgress}%"></div></div>
+        <p style="text-align:right;color:#606080;font-size:0.85rem">${xpInLevel}/100 XP</p>
+
+        <h3 style="margin:1.5rem 0 0.5rem">Badges (${earnedBadges.size}/${allBadgeKeys.length})</h3>
+        <div class="badge-grid">${allBadgeKeys.map(k => {
+          const b = BADGE_DEFS[k];
+          const earned = earnedBadges.has(k);
+          return `<div class="badge-item${earned ? '' : ' locked'}">${b.icon}<div class="tooltip">${b.name} — ${b.desc}</div></div>`;
+        }).join('')}</div>
+
+        <h3 style="margin:1.5rem 0 0.5rem">Completed Challenges (${completed.length})</h3>
+        <div class="challenge-list">${completed.length ? completed.map(c =>
+          `<div class="challenge-row"><span>${c.challenge_id}</span><span class="date">${c.completed_at}</span></div>`
+        ).join('') : '<p style="color:#606080">No challenges completed yet. <a href="/learn">Start learning!</a></p>'}</div>
+      `;
+    } catch (e) {
+      app.innerHTML = `<p>Error loading profile. <button onclick="load()">Retry</button></p>`;
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('fcc_token');
+    localStorage.removeItem('fcc_user');
+    window.location.href = '/';
+  }
+
+  load();
+  </script>
+</body>
+</html>

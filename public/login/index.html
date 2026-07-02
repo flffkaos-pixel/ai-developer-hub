@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - AI Developer Hub</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/nav-auth.js"></script>
+  <style>
+  .auth-form { max-width: 400px; margin: 2rem auto; background: #12122a; border: 1px solid #2a2a4a; border-radius: 12px; padding: 2rem; }
+  .auth-form h2 { margin-bottom: 1.5rem; text-align: center; }
+  .auth-form input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border-radius: 8px; border: 1px solid #2a2a4a; background: #1a1a2e; color: #e4e4e4; font-size: 1rem; }
+  .auth-form .btn { width: 100%; padding: 0.8rem; font-size: 1rem; }
+  .auth-form .error { color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem; }
+  .auth-link { text-align: center; margin-top: 1rem; color: #a0a0c0; }
+  .auth-link a { color: #7c3aed; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">AI Developer Hub</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/courses">Courses</a>
+        <a href="/learn">Curriculum</a>
+        <a href="/chat">AI Chat</a>
+        <a href="/tools">Tools</a>
+        <a href="/login" id="navAuth">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="auth-form">
+      <h2>Login</h2>
+      <div class="error" id="error"></div>
+      <input type="email" id="email" placeholder="Email" autocomplete="email">
+      <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+      <button class="btn btn-primary" onclick="login()">Login</button>
+      <div class="auth-link">Don't have an account? <a href="/register">Register</a></div>
+    </div>
+  </main>
+
+  <script>
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errEl = document.getElementById('error');
+      errEl.textContent = '';
+
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'login', email, password })
+        });
+        const data = await res.json();
+        if (data.error) { errEl.textContent = data.error; return; }
+        localStorage.setItem('fcc_token', data.token);
+        localStorage.setItem('fcc_user', JSON.stringify(data.user));
+        window.location.href = '/profile';
+      } catch (e) {
+        errEl.textContent = 'Connection error';
+      }
+    }
+  </script>
+</body>
+</html>
