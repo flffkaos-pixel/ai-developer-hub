@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Editor - AI Developer Hub</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/dracula.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/css/css.min.js"></script>
+  <script defer src="/nav-auth.js"></script>
+  <style>
+  .editor-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; min-height: 70vh; }
+  .editor-panel { display: flex; flex-direction: column; }
+  .editor-panel .toolbar { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
+  .editor-panel .toolbar .title { flex: 1; color: #a0a0c0; font-size: 0.85rem; }
+  .CodeMirror { height: 400px; border-radius: 8px; border: 1px solid #2a2a4a; flex: 1; }
+  .output-frame { background: white; border-radius: 8px; border: 1px solid #2a2a4a; width: 100%; height: 400px; }
+  .console-output { background: #1a1a2e; border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.85rem; overflow-y: auto; max-height: 200px; flex: 1; white-space: pre-wrap; }
+  .console-output .log { color: #e4e4e4; }
+  .console-output .error { color: #ef4444; }
+  .btn-run { background: #22c55e; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+  .btn-run:hover { background: #16a34a; }
+  .btn-reset { background: #2a2a4a; color: #a0a0c0; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+  .btn-reset:hover { background: #3a3a5a; }
+  .challenge-info { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.6; max-height: 200px; overflow-y: auto; }
+  .challenge-info h3 { margin-bottom: 0.5rem; }
+  .editor-footer { display: flex; gap: 0.5rem; margin-top: 1rem; justify-content: flex-end; }
+  @media (max-width: 768px) { .editor-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">AI Developer Hub</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/courses">Courses</a>
+        <a href="/learn">Curriculum</a>
+        <a href="/chat">AI Chat</a>
+        <a href="/tools">Tools</a>
+        <a href="/login" id="navAuth">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div id="challengeInfo" class="challenge-info">Loading...</div>
+    <div class="editor-layout">
+      <div class="editor-panel">
+        <div class="toolbar">
+          <span class="title" id="langLabel">JavaScript</span>
+          <button class="btn-reset" onclick="resetCode()">Reset</button>
+        </div>
+        <textarea id="codeEditor"></textarea>
+      </div>
+      <div class="editor-panel">
+        <div class="toolbar">
+          <span class="title">Output</span>
+          <button class="btn-run" onclick="runCode()">▶ Run</button>
+        </div>
+        <iframe id="outputFrame" class="output-frame" sandbox="allow-scripts" style="display:none"></iframe>
+        <div id="consoleOutput" class="console-output" style="display:none">Click ▶ Run to execute</div>
+      </div>
+    </div>
+    <div class="editor-footer">
+      <button class="btn btn-sm" onclick="window.history.back()">← Back</button>
+      <button class="btn btn-sm btn-primary" id="completeBtn" onclick="completeAndSave()">✅ Mark Complete</button>
+    </div>
+  </main>
+
+  <script>
+  let editor = null;
+  let currentChallenge = null;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(location.search);
+    const sb = params.get('sb');
+    const block = params.get('block');
+    const idx = parseInt(params.get('idx')) || 0;
+    if (sb && block) loadChallenge(sb, block, idx);
+    else document.getElementById('challengeInfo').textContent = 'No challenge selected. Go to /learn';
+  });
+
+  async function loadChallenge(sbName, blockName, idx) {
+    const res = await fetch(`/data/sb-${sbName}.json`);
+    const sb = await res.json();
+    const block = sb.blocks.find(b => b.name === blockName);
+    if (!block || !block.challenges[idx]) return;
+    currentChallenge = block.challenges[idx];
+
+    document.getElementById('challengeInfo').innerHTML =
+      `<h3>${currentChallenge.title}</h3><div>${(currentChallenge.description || '').replace(/\n/g, '<br>')}</div>`;
+
+    let code = currentChallenge.seed || '// Write your code here\n';
+    let mode = 'javascript';
+    if (code.includes('<html') || code.includes('<!DOCTYPE') || code.includes('<script')) mode = 'htmlmixed';
+    document.getElementById('langLabel').textContent = mode === 'htmlmixed' ? 'HTML' : 'JavaScript';
+
+    if (editor) editor.toTextArea();
+    const ta = document.getElementById('codeEditor');
+    editor = CodeMirror.fromTextArea(ta, {
+      mode,
+      theme: 'dracula',
+      lineNumbers: true,
+      autoCloseBrackets: true,
+      indentUnit: 2,
+      tabSize: 2,
+      lineWrapping: true
+    });
+    editor.setValue(code);
+  }
+
+  function runCode() {
+    const code = editor.getValue();
+    const frame = document.getElementById('outputFrame');
+    const consoleEl = document.getElementById('consoleOutput');
+
+    if (code.includes('<html') || code.includes('<!DOCTYPE') || code.includes('<script') || code.includes('<style') || code.includes('<body')) {
+      frame.style.display = 'block';
+      consoleEl.style.display = 'none';
+      frame.srcdoc = code;
+      return;
+    }
+
+    frame.style.display = 'none';
+    consoleEl.style.display = 'block';
+    const logs = [];
+    const mockConsole = {
+      log: (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ')),
+      error: (...args) => logs.push('❌ ' + args.map(String).join(' ')),
+      warn: (...args) => logs.push('⚠️ ' + args.map(String).join(' '))
+    };
+    try {
+      const fn = new Function('console', code);
+      fn(mockConsole);
+      consoleEl.innerHTML = logs.length ? logs.map(l => `<div class="log">&gt; ${l}</div>`).join('') : '<div class="log">&gt; (no output)</div>';
+    } catch (e) {
+      consoleEl.innerHTML = `<div class="error">❌ ${e.message}</div>`;
+    }
+  }
+
+  function resetCode() {
+    if (currentChallenge) editor.setValue(currentChallenge.seed || '');
+  }
+
+  async function completeAndSave() {
+    const userData = localStorage.getItem('fcc_user');
+    const token = localStorage.getItem('fcc_token');
+    if (!token || !userData || !currentChallenge) { alert('Login to save progress'); return; }
+    try {
+      const user = JSON.parse(userData);
+      const res = await fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, challengeId: currentChallenge.id, title: currentChallenge.title })
+      });
+      const data = await res.json();
+      if (data.status === 'ok' || data.status === 'already_completed') {
+        document.getElementById('completeBtn').textContent = '✅ Done!';
+        document.getElementById('completeBtn').disabled = true;
+        if (data.leveledUp) alert(`🎉 Level ${data.level}!`);
+      }
+    } catch (e) { alert('Error'); }
+  }
+  </script>
+</body>
+</html>

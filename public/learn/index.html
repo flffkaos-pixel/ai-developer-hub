@@ -24,7 +24,7 @@
   .block-item:hover { border-color: #7c3aed; }
   .block-item h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
   .challenge-list { display: flex; flex-direction: column; gap: 0.5rem; }
-  .challenge-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 0.8rem 1rem; cursor: pointer; }
+  .challenge-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 0.8rem 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
   .challenge-item:hover { border-color: #7c3aed; }
   .challenge-detail { background: #12122a; border: 1px solid #2a2a4a; border-radius: 12px; padding: 2rem; line-height: 1.8; }
   .challenge-detail h2 { margin-bottom: 1rem; }
@@ -187,9 +187,10 @@
 
     const sb = await loadSuperblock(sbName);
     const block = sb.blocks.find(b => b.name === blockName);
-    app.innerHTML = `<div class="challenge-list">${block.challenges.slice(0, 100).map((ch, i) =>
+      app.innerHTML = `<div class="challenge-list">${block.challenges.slice(0, 100).map((ch, i) =>
       `<div class="challenge-item" onclick="showChallenge('${sbName}','${blockName}',${i})">
-        ${i+1}. ${ch.title}
+        <span>${i+1}. ${ch.title}</span>
+        <span style="float:right;font-size:0.75rem;color:#7c3aed;margin-top:0.1rem">${ch.seed ? '💻' : ''}</span>
       </div>`
     ).join('')}</div>`;
     window._refresh = () => showChallenges(sbName, blockName);
@@ -212,8 +213,9 @@
           ${ch.seed ? `<h3 style="margin-top:1.5rem">${t('seed_code') || 'Seed Code'}</h3><pre>${ch.seed.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>` : ''}
           ${ch.tests.length ? `<h3 style="margin-top:1.5rem">${t('tests') || 'Tests'}</h3>${ch.tests.map(t => `<pre>${t.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>`).join('')}` : ''}
           <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap">
-            ${showKo ? `<button class="translate-btn" onclick="translateChallenge('${sbName}','${blockName}',${idx})">🌐 ${t('translate') || 'Translate to Korean'}</button>` : ''}
-            ${currentUser && !isComplete ? `<button class="translate-btn" style="border-color:#22c55e;color:#22c55e" onclick="completeChallenge('${sbName}','${blockName}',${idx})">✅ Mark Complete (+10 XP)</button>` : ''}
+          ${showKo ? `<button class="translate-btn" onclick="translateChallenge('${sbName}','${blockName}',${idx})">🌐 ${t('translate') || 'Translate to Korean'}</button>` : ''}
+          ${currentUser && !isComplete ? `<button class="translate-btn" style="border-color:#22c55e;color:#22c55e" onclick="completeChallenge('${sbName}','${blockName}',${idx})">✅ Mark Complete (+10 XP)</button>` : ''}
+          <a href="/editor?sb=${sbName}&block=${blockName}&idx=${idx}" class="translate-btn" style="border-color:#3b82f6;color:#3b82f6;text-decoration:none">💻 Open in Editor</a>
           </div>
           <div id="translation"></div>
           <div id="completeMsg"></div>
