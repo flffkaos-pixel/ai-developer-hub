@@ -94,7 +94,8 @@ function build() {
           dashedName: parsed?.frontmatter?.dashedName || '',
           description: (parsed?.description || '') || '',
           challengeType: parsed?.frontmatter?.challengeType || '',
-          tests: parsed?.tests || []
+          tests: parsed?.tests || [],
+          seed: parsed?.seed || ''
         };
       });
       return { name: blockName, challenges };
