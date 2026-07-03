@@ -31,28 +31,26 @@ function parseMarkdown(filePath) {
   });
 
   const body = frontmatterMatch[2];
-  const descMatch = body.match(/## --description--\n([\s\S]*?)(?=\n## --)/);
-  const instructionsMatch = body.match(/## --instructions--\n([\s\S]*?)(?=\n## --|$)/);
-  const testsMatch = body.match(/## --tests--\n([\s\S]*?)(?=\n## --|$)/);
-  const seedMatch = body.match(/## --seed--\n([\s\S]*?)(?=\n## --|$)/);
+  const sections = body.split(/^# /m).slice(1); // split on h1 headings
+  let description = '', instructions = '', tests = [], seedCode = '';
 
-  let description = descMatch ? descMatch[1].trim() : '';
-  const instructions = instructionsMatch ? instructionsMatch[1].trim() : '';
-  if (instructions) description += '\n\n' + instructions;
+  for (const section of sections) {
+    const header = section.split('\n')[0].trim();
+    const content = section.substring(section.indexOf('\n') + 1).trim();
 
-  let tests = [];
-  if (testsMatch) {
-    const testBlocks = testsMatch[1].match(/```(?:js|json)?\n([\s\S]*?)```/g);
-    if (testBlocks) {
-      tests = testBlocks.map(t => t.replace(/```(?:js|json)?\n?/, '').replace(/```$/, '').trim());
+    if (header === '--description--') description = content;
+    else if (header === '--instructions--') instructions = content;
+    else if (header === '--hints--') {
+      const blocks = content.match(/```(?:js|json)?\n([\s\S]*?)```/g);
+      if (blocks) tests = blocks.map(t => t.replace(/```(?:js|json)?\n?/, '').replace(/```$/, '').trim());
+    }
+    else if (header === '--seed--') {
+      const seedMatch = content.match(/```(?:html|js|css|py|jsx)?\n([\s\S]*?)```/);
+      if (seedMatch) seedCode = seedMatch[1];
     }
   }
 
-  let seedCode = '';
-  if (seedMatch) {
-    const seedBlocks = seedMatch[1].match(/```(?:html|js|css|py|jsx)?\n([\s\S]*?)```/g);
-    if (seedBlocks) seedCode = seedBlocks.join('\n');
-  }
+  if (instructions) description += '\n\n' + instructions;
 
   return { frontmatter, description, tests, seed: seedCode };
 }
@@ -94,9 +92,9 @@ function build() {
           id: ch.id,
           title: ch.title,
           dashedName: parsed?.frontmatter?.dashedName || '',
-          description: (parsed?.description || '').slice(0, 1000),
+          description: (parsed?.description || '') || '',
           challengeType: parsed?.frontmatter?.challengeType || '',
-          tests: (parsed?.tests || []).slice(0, 3)
+          tests: parsed?.tests || []
         };
       });
       return { name: blockName, challenges };
