@@ -1,8 +1,8 @@
-name = "ai-developer-hub"
+name = "codeflowlab"
 compatibility_date = "2025-04-01"
 pages_build_output_dir = "public"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "ai-dev-hub-db"
-database_id = "your-database-id-here"
+database_id = "1ebc62be-9f52-4d90-a0f3-b49135940645"
