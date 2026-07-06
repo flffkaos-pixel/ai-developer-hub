@@ -7,40 +7,117 @@
   <link rel="stylesheet" href="/style.css">
   <script defer src="/nav-auth.js"></script>
   <style>
-  .lang-toggle { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
-  .lang-btn { padding: 0.4rem 1rem; border-radius: 6px; border: 1px solid #2a2a4a; background: transparent; color: #a0a0c0; cursor: pointer; font-size: 0.85rem; }
-  .lang-btn.active { border-color: #7c3aed; color: #7c3aed; background: #7c3aed22; }
-  .breadcrumb { color: #a0a0c0; margin-bottom: 1rem; font-size: 0.9rem; }
-  .breadcrumb span { cursor: pointer; }
-  .breadcrumb span:hover { color: #7c3aed; }
-  .sb-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-  .sb-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 12px; padding: 1.2rem; cursor: pointer; transition: all 0.2s; }
-  .sb-item:hover { border-color: #7c3aed; }
-  .sb-item h3 { margin-bottom: 0.3rem; font-size: 1rem; }
-  .sb-item .en-name { color: #606080; font-size: 0.8rem; display: none; }
-  .sb-item .count { color: #606080; font-size: 0.85rem; }
-  .block-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.8rem; }
-  .block-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 1rem; cursor: pointer; }
-  .block-item:hover { border-color: #7c3aed; }
-  .block-item h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
-  .challenge-list { display: flex; flex-direction: column; gap: 0.5rem; }
-  .challenge-item { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 0.8rem 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-  .challenge-item:hover { border-color: #7c3aed; }
-  .challenge-detail { background: #12122a; border: 1px solid #2a2a4a; border-radius: 12px; padding: 2rem; line-height: 1.8; }
-  .challenge-detail h2 { margin-bottom: 1rem; }
-  .challenge-detail pre { background: #1a1a2e; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
-  .back-btn { background: none; border: 1px solid #2a2a4a; color: #a0a0c0; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; margin-bottom: 1rem; }
-  .back-btn:hover { border-color: #7c3aed; color: #7c3aed; }
-  .loading { text-align: center; padding: 3rem; color: #606080; }
-  .translate-btn { background: none; border: 1px solid #7c3aed; color: #7c3aed; padding: 0.3rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 1rem; display: inline-block; }
-  .translate-btn:hover { background: #7c3aed22; }
-  .ko-text { display: none; }
-  .ko-text.visible { display: inline; }
-  .en-text.hidden { display: none; }
-  .ko-header { display: none; }
-  .lang-ko .ko-header { display: block; }
-  .lang-ko .en-header { display: none; }
-  .lang-ko .sb-item .en-name { display: block; }
+  :root {
+    --bg: #0b0b1a;
+    --surface: #14142a;
+    --surface-hover: #1c1c36;
+    --border: #2a2a4a;
+    --border-hover: #4a4a7a;
+    --accent: #8b5cf6;
+    --accent-dim: #6d28d9;
+    --accent-bg: #8b5cf615;
+    --text: #f1f1f3;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --success: #22c55e;
+    --error: #ef4444;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,.3);
+    --transition: .18s cubic-bezier(.4,0,.2,1);
+  }
+  .container { max-width: 1120px; }
+
+  /* Header area */
+  .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem; margin-bottom: 1.5rem; }
+  .lang-toggle { display: flex; gap: .25rem; background: var(--surface); padding: 3px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .lang-btn { padding: .35rem .9rem; border: none; border-radius: 4px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: .82rem; transition: var(--transition); }
+  .lang-btn.active { background: var(--accent); color: #fff; }
+  .lang-btn:not(.active):hover { color: var(--text); }
+
+  /* Breadcrumb */
+  .breadcrumb { display: flex; align-items: center; gap: .4rem; color: var(--text-muted); font-size: .85rem; margin-bottom: 1.25rem; padding: .5rem 0; }
+  .breadcrumb a, .breadcrumb span[data-click] { color: var(--text-muted); cursor: pointer; text-decoration: none; transition: var(--transition); }
+  .breadcrumb a:hover, .breadcrumb span[data-click]:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--border); }
+  .breadcrumb .current { color: var(--text); }
+
+  /* Loading skeleton */
+  @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+  .skeleton { background: linear-gradient(90deg, var(--surface) 25%, var(--surface-hover) 50%, var(--surface) 75%); background-size: 800px 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-sm); }
+  .skeleton-card { height: 80px; margin-bottom: .75rem; }
+
+  /* Superblock grid */
+  .sb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .85rem; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .sb-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.15rem 1.25rem; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+  .sb-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent); opacity: 0; transition: var(--transition); }
+  .sb-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(139,92,246,.12); }
+  .sb-card:hover::before { opacity: 1; }
+  .sb-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: .2rem; }
+  .sb-card .en-name { color: var(--text-muted); font-size: .78rem; display: none; margin-bottom: .35rem; }
+  .sb-card .meta { color: var(--text-muted); font-size: .8rem; display: flex; align-items: center; gap: .35rem; }
+  .sb-card .meta .icon { font-size: .75rem; }
+  .lang-ko .sb-card .en-name { display: block; }
+
+  /* Block grid */
+  .block-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .75rem; animation: fadeIn .2s ease; }
+  .block-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.15rem; cursor: pointer; transition: var(--transition); }
+  .block-card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 2px 12px rgba(139,92,246,.08); }
+  .block-card h4 { font-size: .93rem; font-weight: 500; margin-bottom: .15rem; }
+  .block-card .meta { color: var(--text-muted); font-size: .78rem; }
+
+  /* Challenge list */
+  .challenge-list { display: flex; flex-direction: column; gap: .35rem; animation: fadeIn .2s ease; }
+  .challenge-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .65rem 1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: space-between; align-items: center; }
+  .challenge-item:hover { border-color: var(--accent); background: var(--surface-hover); }
+  .challenge-item .num { color: var(--text-muted); font-size: .82rem; width: 2rem; flex-shrink: 0; }
+  .challenge-item .title { flex: 1; font-size: .9rem; }
+  .challenge-item .ch-badge { font-size: .72rem; color: var(--text-muted); }
+  .challenge-item.completed { border-left: 3px solid var(--success); }
+  .challenge-item.completed .title { color: var(--success); }
+
+  /* Challenge detail */
+  .challenge-detail { animation: fadeIn .2s ease; }
+  .challenge-detail .back { display: inline-flex; align-items: center; gap: .35rem; color: var(--text-secondary); text-decoration: none; font-size: .85rem; margin-bottom: 1rem; transition: var(--transition); cursor: pointer; background: none; border: none; padding: 0; }
+  .challenge-detail .back:hover { color: var(--accent); }
+  .challenge-detail .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; line-height: 1.75; }
+  .challenge-detail .card h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .challenge-detail .card h2 .done-badge { font-size: .75rem; font-weight: 400; color: var(--success); background: #22c55e18; padding: .15rem .6rem; border-radius: 4px; }
+  .challenge-detail .card .desc { color: var(--text-secondary); }
+  .challenge-detail .card .desc code { background: #1e1e38; color: var(--accent); padding: .12rem .4rem; border-radius: 4px; font-size: .85rem; }
+  .challenge-detail .card .desc pre { background: #0b0b1a; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; overflow-x: auto; margin: .75rem 0; }
+  .challenge-detail .card .desc pre code { background: none; color: inherit; padding: 0; }
+  .challenge-detail .card .section-title { font-size: .9rem; font-weight: 600; color: var(--text-secondary); margin: 1.25rem 0 .5rem; text-transform: uppercase; letter-spacing: .04em; }
+  .challenge-detail .card .seed-code { background: #0b0b1a; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: .85rem; line-height: 1.5; color: var(--text); }
+  .challenge-detail .card .test-item { background: #0b0b1a; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .6rem .85rem; margin-bottom: .35rem; font-family: 'JetBrains Mono', monospace; font-size: .8rem; color: var(--text-secondary); }
+  .challenge-detail .card .actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1.25rem; }
+  .challenge-detail .card .actions .btn { padding: .45rem 1.1rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-size: .85rem; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; gap: .35rem; }
+  .challenge-detail .card .actions .btn-translate { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent); }
+  .challenge-detail .card .actions .btn-translate:hover { background: var(--accent); color: #fff; }
+  .challenge-detail .card .actions .btn-complete { background: #22c55e18; color: var(--success); border: 1px solid var(--success); }
+  .challenge-detail .card .actions .btn-complete:hover { background: var(--success); color: #fff; }
+  .challenge-detail .card .actions .btn-editor { background: #3b82f618; color: #60a5fa; border: 1px solid #3b82f6; }
+  .challenge-detail .card .actions .btn-editor:hover { background: #3b82f6; color: #fff; }
+
+  /* Translation box */
+  .translation-box { margin-top: 1rem; padding: 1rem; background: #0b0b1a; border-radius: var(--radius-sm); border-left: 3px solid var(--accent); line-height: 1.7; color: var(--text-secondary); }
+
+  /* Complete message */
+  .complete-msg { margin-top: 1rem; padding: 1rem; background: #22c55e18; border: 1px solid var(--success); border-radius: var(--radius-sm); font-size: .9rem; }
+
+  /* Auth widget */
+  .auth-widget { font-size: .82rem; color: var(--text-muted); }
+  .auth-widget a { color: var(--text-muted); text-decoration: none; }
+  .auth-widget a:hover { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .container { padding: 1.5rem 1rem; }
+    .sb-grid { grid-template-columns: 1fr; }
+    .block-grid { grid-template-columns: 1fr; }
+    .page-header { flex-direction: column; align-items: stretch; }
+    .challenge-detail .card { padding: 1.25rem; }
+  }
   </style>
 </head>
 <body>
@@ -59,19 +136,19 @@
   </nav>
 
   <main class="container">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
-      <div class="lang-toggle" style="margin-bottom:0">
-        <button class="lang-btn active" onclick="setLang('ko')" id="btnKo">한국어</button>
-        <button class="lang-btn" onclick="setLang('en')" id="btnEn">English</button>
+    <div class="page-header" id="pageHeader">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="ko">한국어</button>
+        <button class="lang-btn" data-lang="en">English</button>
       </div>
-      <div id="authWidget" style="font-size:0.85rem;color:#a0a0c0">
+      <div class="auth-widget" id="authWidget">
         <a href="/login">Login</a> to track progress
       </div>
     </div>
     <div class="breadcrumb" id="breadcrumb">
-      <span onclick="showSuperblocks()">Curriculum</span>
+      <span data-click="showSuperblocks">Curriculum</span>
     </div>
-    <div id="app"><div class="loading">Loading curriculum...</div></div>
+    <div id="app"><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div></div>
   </main>
 
   <footer>
@@ -79,247 +156,292 @@
   </footer>
 
   <script>
-  let curriculumIndex = null;
-  let superblockCache = {};
-  let translations = {};
-  let currentLang = 'ko';
-  let completedSet = new Set();
-  let currentUser = null;
+  const $ = (s, p) => (p || document).querySelector(s);
+  const $$ = (s, p) => [...(p || document).querySelectorAll(s)];
+  const html = (str) => str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const last = (a) => a[a.length - 1];
+
+  let state = {
+    index: null,
+    cache: {},
+    translations: {},
+    lang: 'ko',
+    completed: new Set(),
+    user: null,
+    view: [] // stack: ['superblocks'] | ['blocks', sbName] | ['challenges', sbName, blockName] | ['challenge', sbName, blockName, idx]
+  };
 
   function t(key) {
-    if (currentLang === 'ko' && translations.ui && translations.ui[key]) return translations.ui[key];
-    if (currentLang === 'ko' && translations.superblocks && translations.superblocks[key]) return translations.superblocks[key];
+    if (state.lang === 'ko' && state.translations.ui?.[key]) return state.translations.ui[key];
+    if (state.lang === 'ko' && state.translations.superblocks?.[key]) return state.translations.superblocks[key];
     return null;
   }
 
-  function nameKo(en, key) {
-    if (currentLang === 'ko' && translations.superblocks && translations.superblocks[key]) return translations.superblocks[key];
-    return en.replace(/-/g, ' ');
-  }
-
-  function fmtName(name, key) {
-    const ko = nameKo(name, key);
-    if (currentLang === 'ko') return ko;
+  function nameDisplay(name, key) {
+    if (state.lang === 'ko' && state.translations.superblocks?.[key]) return state.translations.superblocks[key];
     return name.replace(/-/g, ' ');
   }
 
-  async function loadIndex() {
-    const [idxRes, trRes] = await Promise.all([
-      fetch('/data/index.json'),
-      fetch('/data/ko/translations.json').catch(() => null)
-    ]);
-    curriculumIndex = await idxRes.json();
-    if (trRes) translations = await trRes.json();
-
-    // Auth check
-    const userData = localStorage.getItem('fcc_user');
-    const token = localStorage.getItem('fcc_token');
-    if (token && userData) {
-      currentUser = JSON.parse(userData);
-      document.getElementById('authWidget').innerHTML = `<span style="color:#22c55e">${currentUser.email}</span> · <a href="/profile">Profile</a> (Lv.${currentUser.level})`;
-      try {
-        const res = await fetch(`/api/progress?userId=${currentUser.id}`);
-        if (res.ok) {
-          const data = await res.json();
-          (data.completed || []).forEach(c => completedSet.add(c.challenge_id));
-        }
-      } catch (e) { /* offline fallback */ }
-    }
-
-    document.getElementById('app').innerHTML = '';
-    showSuperblocks();
+  async function loadJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} loading ${url}`);
+    return res.json();
   }
 
   async function loadSuperblock(name) {
-    if (!superblockCache[name]) {
-      const res = await fetch(`/data/sb-${name}.json`);
-      superblockCache[name] = await res.json();
-    }
-    return superblockCache[name];
+    if (!state.cache[name]) state.cache[name] = loadJSON(`/data/sb-${name}.json`);
+    return state.cache[name];
   }
 
+  function md(s) {
+    if (!s) return '';
+    return s
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+  }
+
+  /* ─── Event Delegation ─── */
+  document.addEventListener('click', e => {
+    const action = e.target.closest('[data-click]');
+    if (!action) return;
+    const method = action.dataset.click;
+    const args = action.dataset.args;
+    if (method === 'showSuperblocks') showSuperblocks();
+    else if (method === 'showBlocks') showBlocks(args);
+    else if (method === 'showChallenges') { const p = args.split('|'); showChallenges(p[0], p[1]); }
+    else if (method === 'showChallenge') { const p = args.split('|'); showChallenge(p[0], p[1], +p[2]); }
+    else if (method === 'translateChallenge') { const p = args.split('|'); translateChallenge(p[0], p[1], +p[2]); }
+    else if (method === 'completeChallenge') { const p = args.split('|'); completeChallenge(p[0], p[1], +p[2]); }
+  });
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-lang]');
+    if (!btn) return;
+    setLang(btn.dataset.lang);
+  });
+
+  /* ─── Navigation ─── */
   function setLang(lang) {
-    currentLang = lang;
-    document.getElementById('btnKo').className = 'lang-btn' + (lang === 'ko' ? ' active' : '');
-    document.getElementById('btnEn').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
-    if (window._refresh) window._refresh();
+    state.lang = lang;
+    $$('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    if (state.view.length) refresh();
   }
 
+  function breadcrumbHTML() {
+    const parts = [['Curriculum', 'showSuperblocks']];
+    if (state.view[0] === 'blocks') parts.push([nameDisplay(state.view[1], state.view[1])]);
+    else if (state.view[0] === 'challenges' || state.view[0] === 'challenge') {
+      parts.push([nameDisplay(state.view[1], state.view[1]), `showBlocks`, state.view[1]]);
+      parts.push([state.view[2].replace(/-/g, ' ')]);
+      if (state.view[0] === 'challenge') parts.push(['#' + (state.view[3] + 1)]);
+    }
+    return parts.map((p, i) => {
+      if (p[1]) return `<a data-click="${p[1]}" data-args="${p[2]||''}" style="cursor:pointer">${p[0]}</a>`;
+      return `<span class="current">${p[0]}</span>`;
+    }).join('<span class="sep">›</span>');
+  }
+
+  function refresh() {
+    const [view, ...args] = state.view;
+    if (view === 'superblocks') showSuperblocks();
+    else if (view === 'blocks') showBlocks(args[0]);
+    else if (view === 'challenges') showChallenges(args[0], args[1]);
+    else if (view === 'challenge') showChallenge(args[0], args[1], +args[2]);
+  }
+
+  /* ─── Views ─── */
   function showSuperblocks() {
-    document.getElementById('breadcrumb').innerHTML = `<span onclick="showSuperblocks()">${t('curriculum') || 'Curriculum'}</span>`;
-    const app = document.getElementById('app');
-    app.innerHTML = `<div class="sb-list">${curriculumIndex.superblocks.map(sb =>
-      `<div class="sb-item" onclick="showBlocks('${sb.name}')">
-        <h3>${fmtName(sb.name, sb.name)}</h3>
-        <div class="en-name">${sb.name.replace(/-/g, ' ')}</div>
-        <div class="count">${sb.blocks.length} ${t('blocks') || 'blocks'}</div>
+    state.view = ['superblocks'];
+    $('#breadcrumb').innerHTML = breadcrumbHTML();
+    const app = $('#app');
+    app.innerHTML = `<div class="sb-grid">${state.index.superblocks.map(sb =>
+      `<div class="sb-card" data-click="showBlocks" data-args="${html(sb.name)}">
+        <h3>${html(nameDisplay(sb.name, sb.name))}</h3>
+        <div class="en-name">${html(sb.name.replace(/-/g, ' '))}</div>
+        <div class="meta"><span class="icon">📚</span> ${sb.blocks.length} ${t('blocks') || 'blocks'}</div>
       </div>`
     ).join('')}</div>`;
-    window._refresh = showSuperblocks;
   }
 
   async function showBlocks(sbName) {
-    const app = document.getElementById('app');
-    const sbLabel = fmtName(sbName, sbName);
-    document.getElementById('breadcrumb').innerHTML =
-      `<span onclick="showSuperblocks()">${t('curriculum') || 'Curriculum'}</span> › <span>${sbLabel}</span>`;
-    app.innerHTML = '<div class="loading">Loading...</div>';
-
-    const sb = await loadSuperblock(sbName);
-    const blocks = sb.blocks.filter(b => b.challenges.length > 0);
-    app.innerHTML = `<div class="block-list">${blocks.map(b =>
-      `<div class="block-item" onclick="showChallenges('${sbName}','${b.name}')">
-        <h4>${b.name.replace(/-/g, ' ')}</h4>
-        <div class="count">${b.challenges.length} ${t('challenges') || 'challenges'}</div>
-      </div>`
-    ).join('')}</div>`;
-    window._refresh = () => showBlocks(sbName);
+    state.view = ['blocks', sbName];
+    $('#breadcrumb').innerHTML = breadcrumbHTML();
+    const app = $('#app');
+    app.innerHTML = '<div class="skeleton skeleton-card"></div>'.repeat(6);
+    try {
+      const sb = await loadSuperblock(sbName);
+      const blocks = sb.blocks.filter(b => b.challenges.length > 0);
+      app.innerHTML = `<div class="block-grid">${blocks.map(b =>
+        `<div class="block-card" data-click="showChallenges" data-args="${html(sbName)}|${html(b.name)}">
+          <h4>${html(b.name.replace(/-/g, ' '))}</h4>
+          <div class="meta">${b.challenges.length} ${t('challenges') || 'challenges'}</div>
+        </div>`
+      ).join('')}</div>`;
+    } catch (e) {
+      app.innerHTML = `<div style="color:var(--error);padding:2rem;text-align:center">⚠️ Error loading: ${html(e.message)}</div>`;
+    }
   }
 
   async function showChallenges(sbName, blockName) {
-    const app = document.getElementById('app');
-    const sbLabel = fmtName(sbName, sbName);
-    document.getElementById('breadcrumb').innerHTML =
-      `<span onclick="showSuperblocks()">${t('curriculum') || 'Curriculum'}</span> ›
-       <span onclick="showBlocks('${sbName}')">${sbLabel}</span> ›
-       <span>${blockName.replace(/-/g, ' ')}</span>`;
-    app.innerHTML = '<div class="loading">Loading...</div>';
-
-    const sb = await loadSuperblock(sbName);
-    const block = sb.blocks.find(b => b.name === blockName);
-      app.innerHTML = `<div class="challenge-list">${block.challenges.slice(0, 100).map((ch, i) =>
-      `<div class="challenge-item" onclick="showChallenge('${sbName}','${blockName}',${i})">
-        <span>${i+1}. ${ch.title}</span>
-        <span style="float:right;font-size:0.75rem;color:#7c3aed;margin-top:0.1rem">${ch.seed ? '💻' : ''}</span>
-      </div>`
-    ).join('')}</div>`;
-    window._refresh = () => showChallenges(sbName, blockName);
+    state.view = ['challenges', sbName, blockName];
+    $('#breadcrumb').innerHTML = breadcrumbHTML();
+    const app = $('#app');
+    app.innerHTML = '<div class="skeleton skeleton-card"></div>'.repeat(5);
+    try {
+      const sb = await loadSuperblock(sbName);
+      const block = sb.blocks.find(b => b.name === blockName);
+      if (!block) throw new Error('Block not found: ' + blockName);
+      app.innerHTML = `<div class="challenge-list">${block.challenges.map((ch, i) =>
+        `<div class="challenge-item${state.completed.has(ch.id) ? ' completed' : ''}" data-click="showChallenge" data-args="${html(sbName)}|${html(blockName)}|${i}">
+          <span class="num">${state.completed.has(ch.id) ? '✅' : (i+1).toString().padStart(2,'\xa0')}</span>
+          <span class="title">${html(ch.title)}</span>
+          <span class="ch-badge">${ch.seed ? '💻' : ''}</span>
+        </div>`
+      ).join('')}</div>`;
+    } catch (e) {
+      app.innerHTML = `<div style="color:var(--error);padding:2rem;text-align:center">⚠️ Error loading: ${html(e.message)}</div>`;
+    }
   }
 
   async function showChallenge(sbName, blockName, idx) {
-    const app = document.getElementById('app');
-    const sb = await loadSuperblock(sbName);
-    const block = sb.blocks.find(b => b.name === blockName);
-    const ch = block.challenges[idx];
-    if (!ch) return;
+    state.view = ['challenge', sbName, blockName, idx];
+    $('#breadcrumb').innerHTML = breadcrumbHTML();
+    const app = $('#app');
+    app.innerHTML = '<div class="skeleton" style="height:200px"></div>';
+    try {
+      const sb = await loadSuperblock(sbName);
+      const block = sb.blocks.find(b => b.name === blockName);
+      if (!block) throw new Error('Block not found');
+      const ch = block.challenges[idx];
+      if (!ch) throw new Error('Challenge not found at index ' + idx);
+      const complete = state.completed.has(ch.id);
+      const showKo = state.lang === 'ko';
+      const tests = Array.isArray(ch.tests) ? ch.tests : [];
 
-    const isComplete = completedSet.has(ch.id);
-    const render = () => {
-      const showKo = currentLang === 'ko';
-      app.innerHTML = `<button class="back-btn" onclick="showChallenges('${sbName}','${blockName}')">← ${t('back') || 'Back'}</button>
-        <div class="challenge-detail">
-          <h2>${isComplete ? '✅ ' : ''}${ch.title} ${isComplete ? '<span style="color:#22c55e;font-size:0.8rem">Completed</span>' : ''}</h2>
-          <div>${ch.description ? ch.description.replace(/\n/g, '<br>') : '<em>No description</em>'}</div>
-          ${ch.seed ? `<h3 style="margin-top:1.5rem">${t('seed_code') || 'Seed Code'}</h3><pre>${ch.seed.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>` : ''}
-          ${ch.tests.length ? `<h3 style="margin-top:1.5rem">${t('tests') || 'Tests'}</h3>${ch.tests.map(t => `<pre>${t.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>`).join('')}` : ''}
-          <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap">
-          ${showKo ? `<button class="translate-btn" onclick="translateChallenge('${sbName}','${blockName}',${idx})">🌐 ${t('translate') || 'Translate to Korean'}</button>` : ''}
-          ${currentUser && !isComplete ? `<button class="translate-btn" style="border-color:#22c55e;color:#22c55e" onclick="completeChallenge('${sbName}','${blockName}',${idx})">✅ Mark Complete (+10 XP)</button>` : ''}
-          <a href="/editor?sb=${sbName}&block=${blockName}&idx=${idx}" class="translate-btn" style="border-color:#3b82f6;color:#3b82f6;text-decoration:none">💻 Open in Editor</a>
+      app.innerHTML = `<div class="challenge-detail">
+        <a class="back" data-click="showChallenges" data-args="${html(sbName)}|${html(blockName)}">← ${t('back') || 'Back to list'}</a>
+        <div class="card">
+          <h2>${complete ? '✅ ' : ''}${html(ch.title)} ${complete ? '<span class="done-badge">Completed</span>' : ''}</h2>
+          <div class="desc">${ch.description ? md(ch.description) : '<em>No description</em>'}</div>
+
+          ${ch.seed ? `<div class="section-title">${t('seed_code') || 'Seed Code'}</div><div class="seed-code">${html(ch.seed)}</div>` : ''}
+
+          ${tests.length ? `<div class="section-title">${t('tests') || 'Tests'}</div>${tests.map(t => `<div class="test-item">${html(t)}</div>`).join('')}` : ''}
+
+          <div class="actions">
+            ${showKo ? `<button class="btn btn-translate" data-click="translateChallenge" data-args="${html(sbName)}|${html(blockName)}|${idx}">🌐 ${t('translate') || 'Translate to Korean'}</button>` : ''}
+            ${state.user && !complete ? `<button class="btn btn-complete" data-click="completeChallenge" data-args="${html(sbName)}|${html(blockName)}|${idx}">✅ Mark Complete (+10 XP)</button>` : ''}
+            <a href="/editor?sb=${encodeURIComponent(sbName)}&block=${encodeURIComponent(blockName)}&idx=${idx}" class="btn btn-editor">💻 Open in Editor</a>
           </div>
           <div id="translation"></div>
           <div id="completeMsg"></div>
-        </div>`;
-    };
-    render();
-    window._refresh = () => showChallenge(sbName, blockName, idx);
+        </div>
+      </div>`;
+    } catch (e) {
+      app.innerHTML = `<div style="color:var(--error);padding:2rem;text-align:center">⚠️ Error: ${html(e.message)}</div>`;
+    }
   }
 
+  /* ─── Actions ─── */
   async function completeChallenge(sbName, blockName, idx) {
-    const sb = await loadSuperblock(sbName);
-    const block = sb.blocks.find(b => b.name === blockName);
-    const ch = block.challenges[idx];
-    if (!ch || !currentUser) return;
-
+    if (!state.user) return;
     try {
+      const sb = await loadSuperblock(sbName);
+      const block = sb.blocks.find(b => b.name === blockName);
+      const ch = block.challenges[idx];
+      if (!ch) return;
+
       const res = await fetch('/api/progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, challengeId: ch.id, title: ch.title })
+        body: JSON.stringify({ userId: state.user.id, challengeId: ch.id, title: ch.title })
       });
       const data = await res.json();
       if (data.status === 'ok' || data.status === 'already_completed') {
-        completedSet.add(ch.id);
+        state.completed.add(ch.id);
         if (data.xpGained) {
-          currentUser.xp = data.totalXp || (currentUser.xp + 10);
-          currentUser.level = data.level || currentUser.level;
-          localStorage.setItem('fcc_user', JSON.stringify(currentUser));
+          state.user.xp = data.totalXp || (state.user.xp + 10);
+          state.user.level = data.level || state.user.level;
+          localStorage.setItem('fcc_user', JSON.stringify(state.user));
         }
         let msg = '✅ Completed! +10 XP';
         if (data.leveledUp) msg += `<br>🎉 <strong>Level Up! You're now Level ${data.level}!</strong>`;
         if (data.newBadges?.length) msg += `<br>🏅 New badge${data.newBadges.length > 1 ? 's' : ''}!`;
-        document.getElementById('completeMsg').innerHTML = `<div style="margin-top:1rem;padding:1rem;background:#22c55e22;border:1px solid #22c55e;border-radius:8px">${msg}</div>`;
+        $('#completeMsg').innerHTML = `<div class="complete-msg">${msg}</div>`;
         showChallenge(sbName, blockName, idx);
       }
     } catch (e) {
-      document.getElementById('completeMsg').innerHTML = `<div style="color:#ef4444;margin-top:0.5rem">Error: ${e.message}</div>`;
+      $('#completeMsg').innerHTML = `<div style="color:var(--error);margin-top:.5rem">Error: ${html(e.message)}</div>`;
     }
   }
 
   async function translateChallenge(sbName, blockName, idx) {
-    const btn = event.target;
-    const el = document.getElementById('translation');
-    btn.textContent = '⏳ ' + (translations.ui?.translating || 'Translating...');
+    const btn = event.target.closest('[data-click]');
+    btn.textContent = '⏳ ' + (state.translations.ui?.translating || 'Translating...');
     btn.disabled = true;
 
-    const sb = await loadSuperblock(sbName);
-    const block = sb.blocks.find(b => b.name === blockName);
-    const ch = block.challenges[idx];
-
     try {
-      // Try WebLLM first
+      const sb = await loadSuperblock(sbName);
+      const block = sb.blocks.find(b => b.name === blockName);
+      const ch = block.challenges[idx];
+      if (!ch) throw new Error('Challenge not found');
+
       const { CreateMLCEngine } = await import("https://esm.run/@mlc-ai/web-llm");
       const engine = await CreateMLCEngine("gemma-2-2b-it-q4f16_1-MLC", {
         initProgressCallback: (p) => {
           if (p.progress < 1) btn.textContent = `⏳ Loading AI... ${(p.progress * 100).toFixed(0)}%`;
         }
       });
-
       const text = `Translate this programming lesson to Korean. Keep code blocks unchanged.\n\nTitle: ${ch.title}\n\nDescription:\n${ch.description?.slice(0, 1500)}`;
       const reply = await engine.chat.completions.create({
         messages: [{ role: "user", content: text }],
-        max_tokens: 1024,
-        temperature: 0.3
+        max_tokens: 1024, temperature: 0.3
       });
-      el.innerHTML = `<div style="margin-top:1rem;padding:1rem;background:#1a1a2e;border-radius:8px;border-left:3px solid #7c3aed">${reply.choices[0].message.content.replace(/\n/g, '<br>')}</div>`;
+      $('#translation').innerHTML = `<div class="translation-box">${html(reply.choices[0].message.content).replace(/\n/g,'<br>')}</div>`;
     } catch (e) {
-      // Fallback: simple phrase translation
-      const fallback = {
-        "variable": "변수",
-        "function": "함수",
-        "array": "배열",
-        "object": "객체",
-        "string": "문자열",
-        "number": "숫자",
-        "loop": "반복문",
-        "condition": "조건문",
-        "class": "클래스",
-        "value": "값",
-        "store": "저장",
-        "assign": "할당",
-        "declare": "선언",
-        "call": "호출",
-        "return": "반환",
-        "parameter": "매개변수",
-        "argument": "인수",
-        "method": "메서드",
-        "property": "속성"
-      };
+      const fallback = {variable:'변수',function:'함수',array:'배열',object:'객체',string:'문자열',number:'숫자',loop:'반복문',condition:'조건문',class:'클래스',value:'값',store:'저장',assign:'할당',declare:'선언',call:'호출',return:'반환',parameter:'매개변수',argument:'인수',method:'메서드',property:'속성'};
+      const sb = await loadSuperblock(sbName);
+      const block = sb.blocks.find(b => b.name === blockName);
+      const ch = block.challenges[idx];
       let translated = ch.description || '';
-      for (const [en, ko] of Object.entries(fallback)) {
-        translated = translated.replace(new RegExp(`\\b${en}\\b`, 'gi'), ko);
-      }
-      el.innerHTML = `<div style="margin-top:1rem;padding:1rem;background:#1a1a2e;border-radius:8px;border-left:3px solid #f59e0b">
-        <small style="color:#f59e0b">⚠️ AI 번역 실패, 기본 번역 적용됨</small><br><br>
-        ${translated.replace(/\n/g, '<br>')}
-      </div>`;
+      for (const [en, ko] of Object.entries(fallback)) translated = translated.replace(new RegExp(`\\b${en}\\b`, 'gi'), ko);
+      $('#translation').innerHTML = `<div class="translation-box" style="border-left-color:#f59e0b"><small style="color:#f59e0b">⚠️ AI 번역 실패, 기본 번역 적용됨</small><br><br>${html(translated).replace(/\n/g,'<br>')}</div>`;
     }
-
-    btn.textContent = '🌐 ' + (translations.ui?.translate || 'Translate to Korean');
+    btn.textContent = '🌐 ' + (state.translations.ui?.translate || 'Translate to Korean');
     btn.disabled = false;
   }
 
-  loadIndex();
+  /* ─── Init ─── */
+  async function init() {
+    try {
+      const [idxRes, trRes] = await Promise.all([
+        loadJSON('/data/index.json'),
+        loadJSON('/data/ko/translations.json').catch(() => ({}))
+      ]);
+      state.index = idxRes;
+      state.translations = trRes || {};
+
+      const userData = localStorage.getItem('fcc_user');
+      const token = localStorage.getItem('fcc_token');
+      if (token && userData) {
+        state.user = JSON.parse(userData);
+        $('#authWidget').innerHTML = `<span style="color:var(--success)">${html(state.user.email)}</span> · <a href="/profile">Profile</a> (Lv.${state.user.level})`;
+        try {
+          const res = await fetch(`/api/progress?userId=${state.user.id}`);
+          if (res.ok) {
+            const data = await res.json();
+            (data.completed || []).forEach(c => state.completed.add(c.challenge_id));
+          }
+        } catch (_) {}
+      }
+      showSuperblocks();
+    } catch (e) {
+      $('#app').innerHTML = `<div style="color:var(--error);padding:2rem;text-align:center">⚠️ Failed to load curriculum: ${html(e.message)}<br><br><button onclick="location.reload()" style="padding:.5rem 1.5rem;border:none;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer">Retry</button></div>`;
+    }
+  }
+  init();
   </script>
 </body>
 </html>
