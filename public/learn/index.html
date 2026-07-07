@@ -1,390 +1,303 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Curriculum - AI Developer Hub</title>
-  <link rel="stylesheet" href="/style.css">
-  <script defer src="/nav-auth.js"></script>
-  <style>
-  .page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem}
-  .lang-toggle{display:flex;gap:.25rem;background:var(--surface);padding:3px;border-radius:var(--radius-sm);border:1px solid var(--border)}
-  .lang-btn{padding:.35rem .9rem;border:none;border-radius:4px;background:transparent;color:var(--text-secondary);cursor:pointer;font-size:.82rem;transition:var(--transition)}
-  .lang-btn.active{background:var(--accent);color:#fff}
-  .lang-btn:not(.active):hover{color:var(--text)}
-  .sb-grid{animation:fadeIn .25s ease}
-  .sb-card{position:relative;overflow:hidden}
-  .sb-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);opacity:0;transition:var(--transition)}
-  .sb-card:hover::before{opacity:1}
-  .sb-card h3{font-size:1rem;font-weight:600;margin-bottom:.2rem}
-  .sb-card .en-name{color:var(--text-muted);font-size:.78rem;display:none;margin-bottom:.35rem}
-  .sb-card .meta .icon{font-size:.75rem}
-  .lang-ko .sb-card .en-name{display:block}
-  .block-grid{animation:fadeIn .2s ease}
-  .block-card h4{font-size:.93rem;font-weight:500;margin-bottom:.15rem}
-  .challenge-list{animation:fadeIn .2s ease}
-  .challenge-item .num{color:var(--text-muted);font-size:.82rem;width:2rem;flex-shrink:0}
-  .challenge-item .title{flex:1;font-size:.9rem}
-  .challenge-item .ch-badge{font-size:.72rem;color:var(--text-muted)}
-  .challenge-item.completed{border-left:3px solid var(--success)}
-  .challenge-item.completed .title{color:var(--success)}
-  .challenge-detail{animation:fadeIn .2s ease}
-  .challenge-detail .back{display:inline-flex;align-items:center;gap:.35rem;color:var(--text-secondary);text-decoration:none;font-size:.85rem;margin-bottom:1rem;transition:var(--transition);cursor:pointer;background:none;border:none;padding:0}
-  .challenge-detail .back:hover{color:var(--accent)}
-  .challenge-detail .card{padding:1.75rem;line-height:1.75}
-  .challenge-detail .card h2{font-size:1.25rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-  .challenge-detail .card h2 .done-badge{font-size:.75rem;font-weight:400;color:var(--success);background:#22c55e18;padding:.15rem .6rem;border-radius:4px}
-  .challenge-detail .card .desc{color:var(--text-secondary)}
-  .challenge-detail .card .desc code{background:#1e1e38;color:var(--accent);padding:.12rem .4rem;border-radius:4px;font-size:.85rem}
-  .challenge-detail .card .desc pre{background:#0b0b1a;border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto;margin:.75rem 0}
-  .challenge-detail .card .desc pre code{background:none;color:inherit;padding:0}
-  .challenge-detail .card .section-title{font-size:.9rem;font-weight:600;color:var(--text-secondary);margin:1.25rem 0 .5rem;text-transform:uppercase;letter-spacing:.04em}
-  .challenge-detail .card .seed-code{background:#0b0b1a;border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.5}
-  .challenge-detail .card .test-item{background:#0b0b1a;border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .85rem;margin-bottom:.35rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-secondary)}
-  .challenge-detail .card .actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.25rem}
-  .challenge-detail .card .actions .btn{padding:.45rem 1.1rem;border-radius:var(--radius-sm);border:none;cursor:pointer;font-size:.85rem;transition:var(--transition);text-decoration:none;display:inline-flex;align-items:center;gap:.35rem}
-  .challenge-detail .card .actions .btn-translate{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent)}
-  .challenge-detail .card .actions .btn-translate:hover{background:var(--accent);color:#fff}
-  .challenge-detail .card .actions .btn-complete{background:#22c55e18;color:var(--success);border:1px solid var(--success)}
-  .challenge-detail .card .actions .btn-complete:hover{background:var(--success);color:#fff}
-  .challenge-detail .card .actions .btn-editor{background:#3b82f618;color:#60a5fa;border:1px solid #3b82f6}
-  .challenge-detail .card .actions .btn-editor:hover{background:#3b82f6;color:#fff}
-  .translation-box{margin-top:1rem;padding:1rem;background:#0b0b1a;border-radius:var(--radius-sm);border-left:3px solid var(--accent);line-height:1.7;color:var(--text-secondary)}
-  .complete-msg{margin-top:1rem;padding:1rem;background:#22c55e18;border:1px solid var(--success);border-radius:var(--radius-sm);font-size:.9rem}
-  .auth-widget{font-size:.82rem;color:var(--text-muted)}
-  .auth-widget a{color:var(--text-muted);text-decoration:none}
-  .auth-widget a:hover{color:var(--accent)}
-  @media(max-width:600px){
-    .container{padding:1.5rem 1rem}
-    .grid-sb{grid-template-columns:1fr}
-    .grid-blocks{grid-template-columns:1fr}
-    .page-header{flex-direction:column;align-items:stretch}
-    .challenge-detail .card{padding:1.25rem}
-  }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Developer Hub - 학습</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,200" />
+    <style>
+        .learn-layout{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+        .learn-layout .sticky{position:sticky;top:96px}
+        @media(max-width:900px){.learn-layout{grid-template-columns:1fr}.learn-layout .sticky{position:static}}
+        .sb-item{padding:12px 16px;cursor:pointer;border-radius:var(--radius-sm);transition:var(--transition);border-left:3px solid transparent}
+        .sb-item:hover{background:var(--surface)!important}
+        .sb-item.active{background:var(--primary-bg);border-left-color:var(--primary)}
+        .sb-item.active .sb-title{color:var(--primary)}
+        .block{padding:20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);transition:var(--transition);cursor:pointer}
+        .block:hover{border-color:var(--primary);background:var(--surface-hover)}
+        .block.completed{border-left:3px solid var(--success)}
+        .block.current{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
+        .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
+        .status-dot.done{background:var(--success)}
+        .status-dot.pending{background:var(--text-muted)}
+        .status-dot.current{background:var(--primary)}
+        .breadcrumb-context{font-size:.85rem;color:var(--text-muted);margin-bottom:16px}
+        .breadcrumb-context span{cursor:pointer;transition:var(--transition)}
+        .breadcrumb-context span:hover{color:var(--primary)}
+        .breadcrumb-context .sep{color:var(--border-solid);margin:0 4px;pointer-events:none}
+        .content-area{padding:24px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border)}
+        .content-area h2{font-size:1.3rem;margin-bottom:8px}
+        .content-area .meta{font-size:.85rem;color:var(--text-muted);margin-bottom:20px}
+        .content-area p{color:var(--text-secondary);font-size:.95rem;line-height:1.7;margin-bottom:12px}
+        .code-block{background:var(--surface-deep);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin:16px 0;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--terminal);position:relative}
+        .code-block .copy-btn{position:absolute;top:8px;right:8px;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);padding:4px 10px;border-radius:6px;cursor:pointer;transition:var(--transition);font-size:.75rem}
+        .code-block .copy-btn:hover{background:var(--surface-hover);color:var(--text)}
+        .complete-btn{margin-top:24px;width:100%}
+        .progress-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin:16px 0}
+        .progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:4px;transition:width .5s ease}
+        @media(max-width:600px){.nav-links .hide-mobile{display:none}}
+    </style>
 </head>
 <body>
-  <nav>
-    <div class="nav-inner">
-      <a href="/" class="logo">AI Developer Hub</a>
-      <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/courses">Courses</a>
-        <a href="/learn" class="active">Curriculum</a>
-        <a href="/chat">AI Chat</a>
-        <a href="/tools">Tools</a>
-        <a href="/login" id="navAuth">Login</a>
-      </div>
-    </div>
-  </nav>
-
-  <main class="container">
-    <div class="page-header" id="pageHeader">
-      <div class="lang-toggle">
-        <button class="lang-btn active" data-lang="ko">한국어</button>
-        <button class="lang-btn" data-lang="en">English</button>
-      </div>
-      <div class="auth-widget" id="authWidget">
-        <a href="/login">Login</a> to track progress
-      </div>
-    </div>
-    <div class="breadcrumb" id="breadcrumb">
-      <span data-click="showSuperblocks">Curriculum</span>
-    </div>
-    <div id="app"><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div></div>
-  </main>
-
-  <footer>
-    <p>AI Developer Hub &mdash; Curriculum from <a href="https://github.com/freeCodeCamp/freeCodeCamp">freeCodeCamp</a> (BSD-3-Clause).</p>
-  </footer>
-
-  <script>
-  const $ = (s, p) => (p || document).querySelector(s);
-  const $$ = (s, p) => [...(p || document).querySelectorAll(s)];
-  const html = (str) => str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const last = (a) => a[a.length - 1];
-
-  let state = {
-    index: null,
-    cache: {},
-    translations: {},
-    lang: 'ko',
-    completed: new Set(),
-    user: null,
-    view: [] // stack: ['superblocks'] | ['blocks', sbName] | ['challenges', sbName, blockName] | ['challenge', sbName, blockName, idx]
-  };
-
-  function t(key) {
-    if (state.lang === 'ko' && state.translations.ui?.[key]) return state.translations.ui[key];
-    if (state.lang === 'ko' && state.translations.superblocks?.[key]) return state.translations.superblocks[key];
-    return null;
-  }
-
-  function nameDisplay(name, key) {
-    if (state.lang === 'ko' && state.translations.superblocks?.[key]) return state.translations.superblocks[key];
-    return name.replace(/-/g, ' ');
-  }
-
-  async function loadJSON(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status} loading ${url}`);
-    return res.json();
-  }
-
-  async function loadSuperblock(name) {
-    if (!state.cache[name]) state.cache[name] = loadJSON(`/data/sb-${name}.json`);
-    return state.cache[name];
-  }
-
-  function md(s) {
-    if (!s) return '';
-    return s
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n/g, '<br>');
-  }
-
-  /* ─── Event Delegation ─── */
-  document.addEventListener('click', e => {
-    const action = e.target.closest('[data-click]');
-    if (!action) return;
-    const method = action.dataset.click;
-    const args = action.dataset.args;
-    if (method === 'showSuperblocks') showSuperblocks();
-    else if (method === 'showBlocks') showBlocks(args);
-    else if (method === 'showChallenges') { const p = args.split('|'); showChallenges(p[0], p[1]); }
-    else if (method === 'showChallenge') { const p = args.split('|'); showChallenge(p[0], p[1], +p[2]); }
-    else if (method === 'translateChallenge') { const p = args.split('|'); translateChallenge(p[0], p[1], +p[2]); }
-    else if (method === 'completeChallenge') { const p = args.split('|'); completeChallenge(p[0], p[1], +p[2]); }
-  });
-
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('[data-lang]');
-    if (!btn) return;
-    setLang(btn.dataset.lang);
-  });
-
-  /* ─── Navigation ─── */
-  function setLang(lang) {
-    state.lang = lang;
-    $$('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
-    if (state.view.length) refresh();
-  }
-
-  function breadcrumbHTML() {
-    const parts = [['Curriculum', 'showSuperblocks']];
-    if (state.view[0] === 'blocks') parts.push([nameDisplay(state.view[1], state.view[1])]);
-    else if (state.view[0] === 'challenges' || state.view[0] === 'challenge') {
-      parts.push([nameDisplay(state.view[1], state.view[1]), `showBlocks`, state.view[1]]);
-      parts.push([state.view[2].replace(/-/g, ' ')]);
-      if (state.view[0] === 'challenge') parts.push(['#' + (state.view[3] + 1)]);
-    }
-    return parts.map((p, i) => {
-      if (p[1]) return `<a data-click="${p[1]}" data-args="${p[2]||''}" style="cursor:pointer">${p[0]}</a>`;
-      return `<span class="current">${p[0]}</span>`;
-    }).join('<span class="sep">›</span>');
-  }
-
-  function refresh() {
-    const [view, ...args] = state.view;
-    if (view === 'superblocks') showSuperblocks();
-    else if (view === 'blocks') showBlocks(args[0]);
-    else if (view === 'challenges') showChallenges(args[0], args[1]);
-    else if (view === 'challenge') showChallenge(args[0], args[1], +args[2]);
-  }
-
-  /* ─── Views ─── */
-  function showSuperblocks() {
-    state.view = ['superblocks'];
-    $('#breadcrumb').innerHTML = breadcrumbHTML();
-    const app = $('#app');
-    app.innerHTML = `<div class="sb-grid">${state.index.superblocks.map(sb =>
-      `<div class="sb-card" data-click="showBlocks" data-args="${html(sb.name)}">
-        <h3>${html(nameDisplay(sb.name, sb.name))}</h3>
-        <div class="en-name">${html(sb.name.replace(/-/g, ' '))}</div>
-        <div class="meta"><span class="icon">📚</span> ${sb.blocks.length} ${t('blocks') || 'blocks'}</div>
-      </div>`
-    ).join('')}</div>`;
-  }
-
-  async function showBlocks(sbName) {
-    state.view = ['blocks', sbName];
-    $('#breadcrumb').innerHTML = breadcrumbHTML();
-    const app = $('#app');
-    app.innerHTML = '<div class="skeleton skeleton-card"></div>'.repeat(6);
-    try {
-      const sb = await loadSuperblock(sbName);
-      const blocks = sb.blocks.filter(b => b.challenges.length > 0);
-      app.innerHTML = `<div class="block-grid">${blocks.map(b =>
-        `<div class="block-card" data-click="showChallenges" data-args="${html(sbName)}|${html(b.name)}">
-          <h4>${html(b.name.replace(/-/g, ' '))}</h4>
-          <div class="meta">${b.challenges.length} ${t('challenges') || 'challenges'}</div>
-        </div>`
-      ).join('')}</div>`;
-    } catch (e) {
-      app.innerHTML = `<div style="color:var(--error);padding:2rem;text-align:center">⚠️ Error loading: ${html(e.message)}</div>`;
-    }
-  }
-
-  async function showChallenges(sbName, blockName) {
-    state.view = ['challenges', sbName, blockName];
-    $('#breadcrumb').innerHTML = breadcrumbHTML();
-    const app = $('#app');
-    app.innerHTML = '<div class="skeleton skeleton-card"></div>'.repeat(5);
-    try {
-      const sb = await loadSuperblock(sbName);
-      const block = sb.blocks.find(b => b.name === blockName);
-      if (!block) throw new Error('Block not found: ' + blockName);
-      app.innerHTML = `<div class="challenge-list">${block.challenges.map((ch, i) =>
-        `<div class="challenge-item${state.completed.has(ch.id) ? ' completed' : ''}" data-click="showChallenge" data-args="${html(sbName)}|${html(blockName)}|${i}">
-          <span class="num">${state.completed.has(ch.id) ? '✅' : (i+1).toString().padStart(2,'\xa0')}</span>
-          <span class="title">${html(ch.title)}</span>
-          <span class="ch-badge">${ch.seed ? '💻' : ''}</span>
-        </div>`
-      ).join('')}</div>`;
-    } catch (e) {
-      app.innerHTML = `<div style="color:var(--error);padding:2rem;text-align:center">⚠️ Error loading: ${html(e.message)}</div>`;
-    }
-  }
-
-  async function showChallenge(sbName, blockName, idx) {
-    state.view = ['challenge', sbName, blockName, idx];
-    $('#breadcrumb').innerHTML = breadcrumbHTML();
-    const app = $('#app');
-    app.innerHTML = '<div class="skeleton" style="height:200px"></div>';
-    try {
-      const sb = await loadSuperblock(sbName);
-      const block = sb.blocks.find(b => b.name === blockName);
-      if (!block) throw new Error('Block not found');
-      const ch = block.challenges[idx];
-      if (!ch) throw new Error('Challenge not found at index ' + idx);
-      const complete = state.completed.has(ch.id);
-      const showKo = state.lang === 'ko';
-      const tests = Array.isArray(ch.tests) ? ch.tests : [];
-
-      app.innerHTML = `<div class="challenge-detail">
-        <a class="back" data-click="showChallenges" data-args="${html(sbName)}|${html(blockName)}">← ${t('back') || 'Back to list'}</a>
-        <div class="card">
-          <h2>${complete ? '✅ ' : ''}${html(ch.title)} ${complete ? '<span class="done-badge">Completed</span>' : ''}</h2>
-          <div class="desc">${ch.description ? md(ch.description) : '<em>No description</em>'}</div>
-
-          ${ch.seed ? `<div class="section-title">${t('seed_code') || 'Seed Code'}</div><div class="seed-code">${html(ch.seed)}</div>` : ''}
-
-          ${tests.length ? `<div class="section-title">${t('tests') || 'Tests'}</div>${tests.map(t => `<div class="test-item">${html(t)}</div>`).join('')}` : ''}
-
-          <div class="actions">
-            ${showKo ? `<button class="btn btn-translate" data-click="translateChallenge" data-args="${html(sbName)}|${html(blockName)}|${idx}">🌐 ${t('translate') || 'Translate to Korean'}</button>` : ''}
-            ${state.user && !complete ? `<button class="btn btn-complete" data-click="completeChallenge" data-args="${html(sbName)}|${html(blockName)}|${idx}">✅ Mark Complete (+10 XP)</button>` : ''}
-            <a href="/editor?sb=${encodeURIComponent(sbName)}&block=${encodeURIComponent(blockName)}&idx=${idx}" class="btn btn-editor">💻 Open in Editor</a>
-          </div>
-          <div id="translation"></div>
-          <div id="completeMsg"></div>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <span class="logo-icon">✦</span>
+                AI Developer Hub
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/learn/" class="active">Learn</a>
+                <a href="/editor/" class="hide-mobile">Editor</a>
+                <a href="/chat/" class="hide-mobile">Chat</a>
+                <a href="/tools/" class="hide-mobile">Tools</a>
+                <a href="/login/" id="navAuth">Sign In</a>
+            </div>
         </div>
-      </div>`;
-    } catch (e) {
-      app.innerHTML = `<div style="color:var(--error);padding:2rem;text-align:center">⚠️ Error: ${html(e.message)}</div>`;
-    }
-  }
+    </nav>
 
-  /* ─── Actions ─── */
-  async function completeChallenge(sbName, blockName, idx) {
-    if (!state.user) return;
-    try {
-      const sb = await loadSuperblock(sbName);
-      const block = sb.blocks.find(b => b.name === blockName);
-      const ch = block.challenges[idx];
-      if (!ch) return;
+    <main>
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Home</a>
+                <span class="sep">›</span>
+                <span class="current">Learn</span>
+            </div>
 
-      const res = await fetch('/api/progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: state.user.id, challengeId: ch.id, title: ch.title })
-      });
-      const data = await res.json();
-      if (data.status === 'ok' || data.status === 'already_completed') {
-        state.completed.add(ch.id);
-        if (data.xpGained) {
-          state.user.xp = data.totalXp || (state.user.xp + 10);
-          state.user.level = data.level || state.user.level;
-          localStorage.setItem('fcc_user', JSON.stringify(state.user));
+            <h1>AI 학습 커리큘럼</h1>
+            <p style="color:var(--text-secondary);margin-bottom:24px">체계적인 커리큘럼으로 AI 개발을 마스터하세요.</p>
+
+            <div class="learn-layout">
+                <!-- Sidebar: Curriculum list -->
+                <aside class="sticky">
+                    <div class="content-area">
+                        <h4 style="font-family:'Hanken Grotesk',sans-serif;margin-bottom:12px">Curriculum</h4>
+                        <div class="progress-bar" id="progressBarWrapper" style="display:none">
+                            <div class="fill" id="progressFill" style="width:0%"></div>
+                        </div>
+                        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px" id="progressText">0 / 0 완료</p>
+                        <div id="sidebarList"></div>
+                    </div>
+                </aside>
+
+                <!-- Main content area -->
+                <section id="contentArea">
+                    <div class="content-area fade-in" id="placeholder">
+                        <div style="text-align:center;padding:60px 20px">
+                            <span class="material-symbols-outlined" style="font-size:3rem;color:var(--primary);margin-bottom:16px;opacity:.6">school</span>
+                            <h2>커리큘럼을 선택하세요</h2>
+                            <p style="color:var(--text-muted)">왼쪽에서 학습할 과목을 선택하면 내용이 표시됩니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="content-area fade-in" id="contentDisplay" style="display:none">
+                        <div class="breadcrumb-context">
+                            <span onclick="goToCurriculum()">Curriculum</span>
+                            <span class="sep">›</span>
+                            <span id="breadcrumbSubj"></span>
+                        </div>
+
+                        <h2 id="contentTitle"></h2>
+                        <div class="meta">
+                            <span id="contentMeta"></span>
+                            <span style="margin:0 8px;color:var(--border-solid)">·</span>
+                            <span id="contentStatus"></span>
+                        </div>
+
+                        <div id="contentBody"></div>
+
+                        <button class="btn btn-primary complete-btn" id="completeBtn" onclick="toggleComplete()">✔ 완료로 표시</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 AI Developer Hub. Built with passion for AI developers.</p>
+    </footer>
+
+    <script>
+        const curriculum = [
+            { id:'intro-ai', title:'AI 개론', blocks:[
+                { title:'AI란 무엇인가', content:'## AI 개론\n\n인공지능(AI)은 컴퓨터 시스템이 인간의 지능을 모방하여 작업을 수행할 수 있게 하는 기술입니다. 머신러닝, 딥러닝, 자연어 처리 등 다양한 하위 분야로 나뉩니다.\n\n### 핵심 개념\n- **지도 학습**: 정답이 있는 데이터로 학습\n- **비지도 학습**: 정답 없이 데이터 패턴 학습\n- **강화 학습**: 보상을 통해 최적 행동 학습' },
+                { title:'AI의 역사와 발전', content:'## AI 역사\n\n1950년대 튜링 테스트에서 시작하여 현재의 생성형 AI까지.\n\n### 주요里程碑\n- **1950**: 튜링 테스트 제안\n- **2012**: AlexNet, 딥러닝 혁명\n- **2022**: ChatGPT, 생성형 AI 대중화\n- **2025**: AI 에이전트 시대' },
+                { title:'AI 활용 사례', content:'## 활용 사례\n\n### 의료\n- 질병 진단 보조\n- 신약 개발\n\n### 금융\n- 사기 탐지\n- 알고리즘 트레이딩\n\n### 자율주행\n- 객체 인식\n- 경로 계획' }
+            ]},
+            { id:'python', title:'Python 기초', blocks:[
+                { title:'Python 시작하기', content:'## Python 시작\n\n```python\nprint("Hello, AI World!")\n\n# 변수 선언\nname = "AI"\nage = 2026\n\n# 리스트\nskills = ["Python", "ML", "DL"]\n```\n\n인터프리터 방식의 쉬운 문법으로 AI 개발에 가장 널리 사용됩니다.' },
+                { title:'자료형과 연산', content:'## 자료형\n\n```python\n# 숫자형\nx = 10\ny = 3.14\n\n# 문자열\ns = "hello"\ns.upper()  # "HELLO"\n\n# 불리언\nflag = True\n\n# 연산자\nresult = (x + y) * 2\n```' },
+                { title:'함수와 모듈', content:'## 함수\n\n```python\ndef greet(name):\n    return f"Hello, {name}!"\n\n# 람다 함수\nsquare = lambda x: x**2\n\n# 모듈 임포트\nimport numpy as np\nimport pandas as pd\n```' }
+            ]},
+            { id:'ml-basics', title:'머신러닝 기초', blocks:[
+                { title:'머신러닝 개요', content:'## 머신러닝\n\n데이터로부터 패턴을 학습하여 예측/분류하는 알고리즘.\n\n### 머신러닝 vs 전통적 프로그래밍\n- 전통적: 규칙 + 데이터 → 결과\n- ML: 데이터 + 결과 → 규칙\n\n즉, 명시적 프로그래밍 없이 데이터로부터 학습합니다.' },
+                { title:'회귀 분석', content:'## 선형 회귀\n\n```python\nfrom sklearn.linear_model import LinearRegression\n\nmodel = LinearRegression()\nmodel.fit(X_train, y_train)\npredictions = model.predict(X_test)\n\nprint(f"계수: {model.coef_}")\nprint(f"결정계수: {model.score(X_test, y_test):.2f}")\n```' },
+                { title:'분류 알고리즘', content:'## 분류\n\n```python\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score\n\nmodel = RandomForestClassifier(n_estimators=100)\nmodel.fit(X_train, y_train)\ny_pred = model.predict(X_test)\n\nprint(f"정확도: {accuracy_score(y_test, y_pred):.2f}")\n```' }
+            ]},
+            { id:'dl-basics', title:'딥러닝 입문', blocks:[
+                { title:'신경망 기초', content:'## 신경망\n\n퍼셉트론에서 시작하여 다층 신경망(MLP)으로 발전.\n\n```python\nimport tensorflow as tf\n\nmodel = tf.keras.Sequential([\n    tf.keras.layers.Dense(64, activation="relu"),\n    tf.keras.layers.Dense(32, activation="relu"),\n    tf.keras.layers.Dense(10, activation="softmax")\n])\n```\n\n- **입력층**: 데이터 수신\n- **은닉층**: 특징 추출\n- **출력층**: 결과 생성' },
+                { title:'CNN과 이미지 처리', content:'## CNN\n\n```python\nmodel = tf.keras.Sequential([\n    tf.keras.layers.Conv2D(32, (3,3), activation="relu", input_shape=(28,28,1)),\n    tf.keras.layers.MaxPooling2D(2,2),\n    tf.keras.layers.Flatten(),\n    tf.keras.layers.Dense(10, activation="softmax")\n])\n```\n\nConvolution + Pooling 구조로 이미지 특징 추출에 탁월합니다.' },
+                { title:'RNN과 시퀀스', content:'## RNN\n\n순차 데이터 처리를 위한 신경망.\n\n```python\nmodel = tf.keras.Sequential([\n    tf.keras.layers.LSTM(64, input_shape=(seq_len, n_features)),\n    tf.keras.layers.Dense(1)\n])\nmodel.compile(optimizer="adam", loss="mse")\n```\n\nLSTM은 장기 의존성 문제를 해결한 RNN 변형입니다.' }
+            ]},
+            { id:'nlp', title:'자연어 처리', blocks:[
+                { title:'텍스트 전처리', content:'## 텍스트 전처리\n\n```python\nimport re\nfrom konlpy.tag import Okt\n\ntext = "AI 개발 재미있네요!"\nokt = Okt()\ntokens = okt.morphs(text)\nprint(tokens)  # ["AI", "개발", "재미있", "네요", "!"]\n```\n\n- 토큰화 → 불용어 제거 → 정규화' },
+                { title:'Word Embedding', content:'## 임베딩\n\n```python\n# Word2Vec\nfrom gensim.models import Word2Vec\n\nsentences = [["ai","developer","hub"], ["learn","python"]]\nmodel = Word2Vec(sentences, vector_size=100, window=5)\n\n# 유사 단어 찾기\nmodel.wv.most_similar("ai")\n```\n\n단어를 밀집 벡터로 표현하여 의미적 유사도를 포착합니다.' },
+                { title:'Transformer와 BERT', content:'## Transformer\n\n`Attention is All You Need` (2017)\n\n```python\nfrom transformers import pipeline\n\nclassifier = pipeline("sentiment-analysis")\nresult = classifier("I love AI!")[0]\nprint(result)  # {"label":"POSITIVE","score":0.999}\n```\n\nSelf-Attention 메커니즘으로 병렬 처리와 장거리 의존성 학습이 가능합니다.' }
+            ]},
+            { id:'project', title:'최종 프로젝트', blocks:[
+                { title:'프로젝트 기획', content:'## 프로젝트\n\n직접 AI 모델을 기획, 개발, 배포하는 종합 프로젝트를 수행합니다.\n\n### 주제 예시\n- 감정 분석 챗봇\n- 이미지 분류 웹앱\n- 주가 예측 대시보드' },
+                { title:'모델 개발', content:'## 구현\n\n선택한 주제에 맞춰 데이터 수집, 전처리, 모델 학습을 진행합니다.\n\n```python\n# 모델 저장\nmodel.save("my_model.keras")\n\n# 저장된 모델 로드\nloaded = tf.keras.models.load_model("my_model.keras")\n```' },
+                { title:'배포 및 발표', content:'## 배포\n\nFlask/FastAPI로 API 서버를 구축하고 클라우드에 배포합니다.\n\n```python\nfrom flask import Flask, request, jsonify\napp = Flask(__name__)\n\n@app.route("/predict", methods=["POST"])\ndef predict():\n    data = request.json\n    result = model.predict(data)\n    return jsonify({"prediction": result.tolist()})\n```' }
+            ]}
+        ];
+
+        let currentSubj = null;
+        let currentBlockIdx = null;
+        let completed = JSON.parse(localStorage.getItem('learnCompleted') || '{}');
+        let currentTheme = '';
+
+        function renderSidebar(){
+            const list = document.getElementById('sidebarList');
+            list.innerHTML = '';
+            curriculum.forEach((subj, si) => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '4px';
+                const allDone = subj.blocks.every((b, bi) => completed[subj.id+'-'+bi]);
+                const someDone = subj.blocks.some((b, bi) => completed[subj.id+'-'+bi]);
+                div.innerHTML = `
+                    <div class="sb-item ${currentSubj?.id===subj.id?'active':''}" onclick="selectSubject(${si})">
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <span class="status-dot ${allDone?'done':someDone?'current':'pending'}"></span>
+                            <span class="sb-title" style="font-weight:500;font-size:.9rem">${subj.title}</span>
+                        </div>
+                        <div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;padding-left:18px">
+                            ${subj.blocks.filter((b,bi)=>completed[subj.id+'-'+bi]).length}/${subj.blocks.length} 완료
+                        </div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+            updateProgress();
         }
-        let msg = '✅ Completed! +10 XP';
-        if (data.leveledUp) msg += `<br>🎉 <strong>Level Up! You're now Level ${data.level}!</strong>`;
-        if (data.newBadges?.length) msg += `<br>🏅 New badge${data.newBadges.length > 1 ? 's' : ''}!`;
-        $('#completeMsg').innerHTML = `<div class="complete-msg">${msg}</div>`;
-        showChallenge(sbName, blockName, idx);
-      }
-    } catch (e) {
-      $('#completeMsg').innerHTML = `<div style="color:var(--error);margin-top:.5rem">Error: ${html(e.message)}</div>`;
-    }
-  }
 
-  async function translateChallenge(sbName, blockName, idx) {
-    const btn = event.target.closest('[data-click]');
-    btn.textContent = '⏳ ' + (state.translations.ui?.translating || 'Translating...');
-    btn.disabled = true;
-
-    try {
-      const sb = await loadSuperblock(sbName);
-      const block = sb.blocks.find(b => b.name === blockName);
-      const ch = block.challenges[idx];
-      if (!ch) throw new Error('Challenge not found');
-
-      const { CreateMLCEngine } = await import("https://esm.run/@mlc-ai/web-llm");
-      const engine = await CreateMLCEngine("gemma-2-2b-it-q4f16_1-MLC", {
-        initProgressCallback: (p) => {
-          if (p.progress < 1) btn.textContent = `⏳ Loading AI... ${(p.progress * 100).toFixed(0)}%`;
+        function selectSubject(si){
+            currentSubj = curriculum[si];
+            currentBlockIdx = null;
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('contentDisplay').style.display = 'block';
+            document.getElementById('breadcrumbSubj').textContent = currentSubj.title;
+            document.getElementById('contentTitle').textContent = currentSubj.title;
+            document.getElementById('contentMeta').textContent = currentSubj.blocks.length + '개 학습 블록';
+            const doneCount = currentSubj.blocks.filter((b,bi)=>completed[currentSubj.id+'-'+bi]).length;
+            document.getElementById('contentStatus').textContent = doneCount + '/' + currentSubj.blocks.length + ' 완료';
+            document.getElementById('completeBtn').style.display = 'none';
+            let bodyHtml = '<div class="grid-blocks">';
+            currentSubj.blocks.forEach((b, bi) => {
+                const isDone = completed[currentSubj.id+'-'+bi];
+                bodyHtml += `
+                    <div class="block ${isDone?'completed':''}" onclick="selectBlock(${si},${bi})">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                            <span class="status-dot ${isDone?'done':'pending'}"></span>
+                            <span style="font-weight:500">${b.title}</span>
+                        </div>
+                        <div style="font-size:.82rem;color:var(--text-muted);">${b.content.split('\n')[0].replace(/^#+ /,'')}...</div>
+                    </div>
+                `;
+            });
+            bodyHtml += '</div>';
+            document.getElementById('contentBody').innerHTML = bodyHtml;
+            renderSidebar();
         }
-      });
-      const text = `Translate this programming lesson to Korean. Keep code blocks unchanged.\n\nTitle: ${ch.title}\n\nDescription:\n${ch.description?.slice(0, 1500)}`;
-      const reply = await engine.chat.completions.create({
-        messages: [{ role: "user", content: text }],
-        max_tokens: 1024, temperature: 0.3
-      });
-      $('#translation').innerHTML = `<div class="translation-box">${html(reply.choices[0].message.content).replace(/\n/g,'<br>')}</div>`;
-    } catch (e) {
-      const fallback = {variable:'변수',function:'함수',array:'배열',object:'객체',string:'문자열',number:'숫자',loop:'반복문',condition:'조건문',class:'클래스',value:'값',store:'저장',assign:'할당',declare:'선언',call:'호출',return:'반환',parameter:'매개변수',argument:'인수',method:'메서드',property:'속성'};
-      const sb = await loadSuperblock(sbName);
-      const block = sb.blocks.find(b => b.name === blockName);
-      const ch = block.challenges[idx];
-      let translated = ch.description || '';
-      for (const [en, ko] of Object.entries(fallback)) translated = translated.replace(new RegExp(`\\b${en}\\b`, 'gi'), ko);
-      $('#translation').innerHTML = `<div class="translation-box" style="border-left-color:#f59e0b"><small style="color:#f59e0b">⚠️ AI 번역 실패, 기본 번역 적용됨</small><br><br>${html(translated).replace(/\n/g,'<br>')}</div>`;
-    }
-    btn.textContent = '🌐 ' + (state.translations.ui?.translate || 'Translate to Korean');
-    btn.disabled = false;
-  }
 
-  /* ─── Init ─── */
-  async function init() {
-    try {
-      const [idxRes, trRes] = await Promise.all([
-        loadJSON('/data/index.json'),
-        loadJSON('/data/ko/translations.json').catch(() => ({}))
-      ]);
-      state.index = idxRes;
-      state.translations = trRes || {};
+        function selectBlock(si, bi){
+            currentSubj = curriculum[si];
+            currentBlockIdx = bi;
+            const block = currentSubj.blocks[bi];
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('contentDisplay').style.display = 'block';
+            document.getElementById('breadcrumbSubj').textContent = currentSubj.title + ' › ' + block.title;
+            document.getElementById('contentTitle').textContent = block.title;
+            document.getElementById('contentMeta').textContent = currentSubj.title;
+            const isDone = completed[currentSubj.id+'-'+bi];
+            document.getElementById('contentStatus').textContent = isDone ? '✅ 완료' : '📖 학습 중';
+            const btn = document.getElementById('completeBtn');
+            btn.textContent = isDone ? '↩ 미완료로 되돌리기' : '✔ 완료로 표시';
+            btn.className = 'btn ' + (isDone ? 'btn-ghost' : 'btn-primary') + ' complete-btn';
+            document.getElementById('contentBody').innerHTML = formatContent(block.content);
+            renderSidebar();
+        }
 
-      const userData = localStorage.getItem('fcc_user');
-      const token = localStorage.getItem('fcc_token');
-      if (token && userData) {
-        state.user = JSON.parse(userData);
-        $('#authWidget').innerHTML = `<span style="color:var(--success)">${html(state.user.email)}</span> · <a href="/profile">Profile</a> (Lv.${state.user.level})`;
-        try {
-          const res = await fetch(`/api/progress?userId=${state.user.id}`);
-          if (res.ok) {
-            const data = await res.json();
-            (data.completed || []).forEach(c => state.completed.add(c.challenge_id));
-          }
-        } catch (_) {}
-      }
-      showSuperblocks();
-    } catch (e) {
-      $('#app').innerHTML = `<div style="color:var(--error);padding:2rem;text-align:center">⚠️ Failed to load curriculum: ${html(e.message)}<br><br><button onclick="location.reload()" style="padding:.5rem 1.5rem;border:none;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer">Retry</button></div>`;
-    }
-  }
-  init();
-  </script>
+        function formatContent(md){
+            let html = md
+                .replace(/```(\w+)?\n([\s\S]*?)```/g, (m, lang, code) => {
+                    const langLabel = lang || 'code';
+                    return `<div class="code-block"><div style="font-size:.72rem;color:var(--text-muted);margin-bottom:8px">${langLabel}</div><pre style="margin:0">${escapeHtml(code.trim())}</pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>`;
+                })
+                .replace(/^### (.+)$/gm, '<h4 style="margin-top:20px;margin-bottom:8px">$1</h4>')
+                .replace(/^## (.+)$/gm, '<h3 style="margin-top:28px;margin-bottom:12px;font-family:\'Hanken Grotesk\',sans-serif">$1</h3>')
+                .replace(/^# (.+)$/gm, '<h2 style="margin-top:28px;margin-bottom:12px">$1</h2>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--text)">$1</strong>')
+                .replace(/- (.+)/g, '<li style="color:var(--text-secondary);margin-bottom:4px">• $1</li>')
+                .replace(/\n\n/g, '</p><p style="color:var(--text-secondary);font-size:.95rem;line-height:1.7">');
+            return '<p style="color:var(--text-secondary);font-size:.95rem;line-height:1.7">' + html + '</p>';
+        }
+
+        function escapeHtml(t){
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+
+        function copyCode(btn){
+            const code = btn.closest('.code-block').querySelector('pre').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 1500);
+            });
+        }
+
+        function toggleComplete(){
+            if(!currentSubj || currentBlockIdx===null) return;
+            const key = currentSubj.id+'-'+currentBlockIdx;
+            if(completed[key]){
+                delete completed[key];
+            } else {
+                completed[key] = true;
+            }
+            localStorage.setItem('learnCompleted', JSON.stringify(completed));
+            selectBlock(curriculum.indexOf(currentSubj), currentBlockIdx);
+        }
+
+        function goToCurriculum(){
+            if(currentSubj) selectSubject(curriculum.indexOf(currentSubj));
+        }
+
+        function updateProgress(){
+            const total = curriculum.reduce((a,s) => a + s.blocks.length, 0);
+            const done = Object.keys(completed).length;
+            const pct = total ? Math.round(done/total*100) : 0;
+            const bar = document.getElementById('progressBarWrapper');
+            const fill = document.getElementById('progressFill');
+            const txt = document.getElementById('progressText');
+            if(total > 0){
+                bar.style.display = 'block';
+                fill.style.width = pct + '%';
+                txt.textContent = `${done} / ${total} 완료 (${pct}%)`;
+            }
+        }
+
+        // Check for auth
+        (function(){
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const navAuth = document.getElementById('navAuth');
+            if(user){
+                navAuth.textContent = user.name || user.email || 'My Profile';
+                navAuth.href = '/profile/';
+            }
+        })();
+
+        renderSidebar();
+    </script>
 </body>
 </html>

@@ -5,74 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Courses - AI Developer Hub</title>
   <link rel="stylesheet" href="/style.css">
-  <script defer src="/nav-auth.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,200" />
+  <style>
+  .course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .course-card{padding:24px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border);transition:var(--transition)}
+  .course-card:hover{transform:translateY(-3px);border-color:var(--primary);box-shadow:0 20px 40px -10px rgba(99,102,241,0.12)}
+  .course-card h3{font-family:'Hanken Grotesk',sans-serif;font-size:1.05rem;margin-bottom:6px}
+  .course-card p{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.5}
+  .course-card .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:500;background:var(--primary-bg);color:var(--primary)}
+  .course-card .course-meta{font-size:.78rem;color:var(--text-muted);margin:8px 0 12px}
+  .course-card.highlighted{border-color:var(--secondary);background:rgba(76,215,246,0.05)}
+  .course-card.highlighted .badge{background:rgba(76,215,246,0.15);color:var(--secondary)}
+  .gen-form{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .gen-form input,.gen-form select{padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.9rem;flex:1;min-width:180px}
+  .gen-form select{flex:0 0 auto}
+  .lesson-output{margin-top:12px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;color:var(--text-secondary);line-height:1.7}
+  </style>
 </head>
 <body>
   <nav>
     <div class="nav-inner">
-      <a href="/" class="logo">AI Developer Hub</a>
+      <a href="/" class="logo">
+        <span class="logo-icon">✦</span>
+        AI Developer Hub
+      </a>
       <div class="nav-links">
         <a href="/">Home</a>
-        <a href="/">Home</a>
-        <a href="/courses" class="active">Courses</a>
-        <a href="/learn">Curriculum</a>
-        <a href="/chat">AI Chat</a>
-        <a href="/tools">Tools</a>
-        <a href="/login" id="navAuth">Login</a>
+        <a href="/learn/" class="active">Learn</a>
+        <a href="/editor/">Editor</a>
+        <a href="/chat/" class="hide-mobile">Chat</a>
+        <a href="/tools/" class="hide-mobile">Tools</a>
+        <a href="/login/" id="navAuth">Sign In</a>
       </div>
     </div>
   </nav>
 
   <main class="container">
+    <div class="breadcrumb">
+      <a href="/">Home</a><span class="sep">›</span><span class="current">Courses</span>
+    </div>
     <h1>Courses</h1>
-    <p class="subtitle">Interactive coding curriculum — 20,000+ challenges, all free</p>
+    <p style="color:var(--text-secondary);margin-bottom:24px">Interactive coding curriculum — all free, all levels.</p>
 
     <div class="course-grid">
       <div class="course-card">
         <h3>📚 Full Curriculum</h3>
-        <p>Browse all 98 courses — from beginner to advanced</p>
+        <p>Browse all courses — from beginner to advanced, 20,000+ challenges</p>
         <span class="badge">All Levels</span>
         <div class="course-meta">20,000+ challenges</div>
-        <a href="/learn" class="btn btn-sm">Browse</a>
+        <a href="/learn/" class="btn btn-sm btn-primary">Browse</a>
       </div>
       <div class="course-card">
         <h3>Responsive Web Design</h3>
-        <p>HTML, CSS, Flexbox, Grid - Build responsive websites</p>
+        <p>HTML, CSS, Flexbox, Grid — build responsive websites from scratch</p>
         <span class="badge">Beginner</span>
         <div class="course-meta">300+ hours · 20 projects</div>
-        <a href="/learn" class="btn btn-sm">Start</a>
+        <a href="/learn/" class="btn btn-sm">Start</a>
       </div>
       <div class="course-card">
         <h3>JavaScript Algorithms</h3>
-        <p>Core JS, Data Structures, Algorithm challenges</p>
+        <p>Core JS, data structures, algorithm challenges with live testing</p>
         <span class="badge">Beginner</span>
         <div class="course-meta">200+ hours · 100+ challenges</div>
-        <a href="/learn" class="btn btn-sm">Start</a>
+        <a href="/learn/" class="btn btn-sm">Start</a>
       </div>
       <div class="course-card">
         <h3>Front End Libraries</h3>
-        <p>React, Redux, Bootstrap, jQuery</p>
+        <p>React, Redux, Bootstrap — modern frontend frameworks and tools</p>
         <span class="badge">Intermediate</span>
         <div class="course-meta">200+ hours · 10 projects</div>
-        <a href="/learn" class="btn btn-sm">Start</a>
+        <a href="/learn/" class="btn btn-sm">Start</a>
       </div>
       <div class="course-card">
         <h3>Backend & APIs</h3>
-        <p>Node.js, Express, MongoDB, Mongoose</p>
+        <p>Node.js, Express, MongoDB — build and deploy RESTful APIs</p>
         <span class="badge">Intermediate</span>
         <div class="course-meta">200+ hours · 10 projects</div>
-        <a href="/learn" class="btn btn-sm">Start</a>
+        <a href="/learn/" class="btn btn-sm">Start</a>
       </div>
       <div class="course-card">
         <h3>Python & Data Science</h3>
-        <p>Python, NumPy, Pandas, Data visualization</p>
+        <p>Python, NumPy, Pandas — data analysis and visualization</p>
         <span class="badge">Intermediate</span>
         <div class="course-meta">200+ hours · 15 projects</div>
-        <a href="/learn" class="btn btn-sm">Start</a>
+        <a href="/learn/" class="btn btn-sm">Start</a>
       </div>
       <div class="course-card highlighted">
-        <h3>🤖 AI-Powered Lesson Generator</h3>
-        <p>Generate custom lessons on any topic at any level</p>
+        <h3>🤖 AI Lesson Generator</h3>
+        <p>Generate custom lessons on any programming topic at any level</p>
         <span class="badge">AI Feature</span>
         <div class="course-meta">Personalized · Instant</div>
         <button class="btn btn-sm" onclick="showGenerator()">Generate</button>
@@ -80,7 +100,7 @@
     </div>
 
     <section class="lesson-generator" id="lessonGenerator" style="display:none">
-      <h2>AI Lesson Generator</h2>
+      <h2 style="margin-top:32px">AI Lesson Generator</h2>
       <div class="gen-form">
         <input type="text" id="topicInput" placeholder="Topic (e.g. React Hooks, Python decorators)" />
         <select id="levelSelect">
@@ -94,33 +114,33 @@
     </section>
   </main>
 
-  <footer>
-    <p>AI Developer Hub &mdash; Based on <a href="https://github.com/freeCodeCamp/freeCodeCamp">freeCodeCamp</a> (BSD-3-Clause).</p>
-  </footer>
+  <footer><p>© 2026 AI Developer Hub. Built with passion for AI developers.</p></footer>
 
   <script>
     function showGenerator() {
       const gen = document.getElementById('lessonGenerator');
-      gen.style.display = gen.style.display === 'none' ? 'block' : 'none';
+      gen.style.display = gen.style.display === 'none' ? 'block' : 'block';
+      gen.scrollIntoView({behavior:'smooth'});
     }
-
     async function generateLesson() {
       const topic = document.getElementById('topicInput').value || 'Programming';
       const level = document.getElementById('levelSelect').value;
       const output = document.getElementById('lessonOutput');
-      output.innerHTML = '<p>Generating lesson...</p>';
+      output.innerHTML = '<p>⏳ Generating lesson...</p>';
       try {
         const res = await fetch('/api/lessons', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic, level })
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({topic,level})
         });
         const data = await res.json();
-        output.innerHTML = `<h3>${data.title}</h3><div class="markdown">${data.content.replace(/\n/g, '<br>')}</div>`;
-      } catch {
-        output.innerHTML = '<p>Error generating lesson. Try again.</p>';
-      }
+        output.innerHTML = `<h3>${data.title}</h3><div style="line-height:1.8">${data.content.replace(/\n/g,'<br>')}</div>`;
+      } catch { output.innerHTML = '<p>Error generating lesson. Try again.</p>'; }
     }
+    (function(){
+      const user = JSON.parse(localStorage.getItem('user')||'null');
+      const navAuth = document.getElementById('navAuth');
+      if(user){ navAuth.textContent = user.name||user.email||'My Profile'; navAuth.href = '/profile/'; }
+    })();
   </script>
 </body>
 </html>
