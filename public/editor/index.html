@@ -14,31 +14,55 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/css/css.min.js"></script>
   <script defer src="/nav-auth.js"></script>
   <style>
-  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; min-height: calc(100vh - 160px); }
-  .left-panel { display: flex; flex-direction: column; gap: 0.5rem; }
-  .right-panel { display: flex; flex-direction: column; gap: 0.5rem; }
-  .desc-box { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 1rem; overflow-y: auto; max-height: 200px; font-size: 0.9rem; line-height: 1.6; }
-  .desc-box h3 { margin-bottom: 0.5rem; font-size: 1rem; }
-  .toolbar { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
-  .toolbar .label { color: #a0a0c0; font-size: 0.8rem; flex: 1; }
-  .CodeMirror { height: 350px; border-radius: 8px; border: 1px solid #2a2a4a; }
-  .preview-frame { background: white; border-radius: 8px; border: 1px solid #2a2a4a; width: 100%; height: 400px; }
-  .test-results { background: #12122a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 0.8rem; flex: 1; overflow-y: auto; font-size: 0.85rem; }
-  .test-pass { color: #22c55e; }
-  .test-fail { color: #ef4444; }
-  .test-item { padding: 0.3rem 0; border-bottom: 1px solid #1a1a2e; display: flex; gap: 0.5rem; align-items: flex-start; }
-  .btn { padding: 0.5rem 1.2rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
-  .btn-run { background: #22c55e; color: white; }
-  .btn-run:hover { background: #16a34a; }
-  .btn-reset { background: #2a2a4a; color: #a0a0c0; }
-  .btn-reset:hover { background: #3a3a5a; }
-  .btn-submit { background: #7c3aed; color: white; }
-  .btn-submit:hover { background: #6d28d9; }
-  .btn-submit:disabled { opacity: 0.4; cursor: default; }
-  .status-bar { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
-  .status-bar .count { color: #606080; font-size: 0.8rem; }
-  .all-pass { color: #22c55e; font-weight: bold; }
-  @media (max-width: 768px) { .layout { grid-template-columns: 1fr; } }
+  .editor-layout{display:grid;grid-template-columns:380px 1fr;gap:1.25rem;min-height:calc(100vh - 140px)}
+  @media(max-width:1024px){.editor-layout{grid-template-columns:1fr}}
+
+  /* Left panel - description */
+  .desc-panel{display:flex;flex-direction:column;gap:.75rem;max-height:calc(100vh - 140px);overflow-y:auto}
+  .desc-panel::-webkit-scrollbar{width:4px}
+  .desc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;line-height:1.7}
+  .desc-card h2{font-size:1.1rem;font-weight:600;margin-bottom:.5rem;word-break:break-word}
+  .desc-card .meta{font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;display:flex;gap:.5rem;flex-wrap:wrap}
+  .desc-card .meta .tag{padding:.1rem .45rem;border-radius:3px;background:var(--accent-bg);color:var(--accent);font-size:.72rem}
+  .desc-card .body{font-size:.88rem;color:var(--text-secondary);line-height:1.75}
+  .desc-card .body code{background:#1e1e38;color:var(--accent);padding:.1rem .35rem;border-radius:3px;font-size:.82rem}
+  .desc-card .body pre{margin:.6rem 0;padding:.75rem;background:#0b0b1a;border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:.82rem}
+  .desc-card .body pre code{background:none;padding:0;color:inherit}
+  .desc-card .section-label{font-size:.78rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-top:1rem;margin-bottom:.4rem}
+  .desc-card .seed-block{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.75rem;background:#0b0b1a;border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;line-height:1.4;color:var(--text-secondary)}
+  .desc-card .test-item{font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.5rem .65rem;margin-bottom:.25rem;background:#0b0b1a;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted)}
+  .desc-actions{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.75rem}
+  .desc-actions .actn{padding:.35rem .85rem;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:.8rem;cursor:pointer;transition:var(--transition);background:var(--surface);color:var(--text-secondary);display:inline-flex;align-items:center;gap:.3rem;text-decoration:none}
+  .desc-actions .actn:hover{background:var(--surface-hover);border-color:var(--border-hover);color:var(--text)}
+  .desc-actions .actn-primary{border-color:var(--accent);color:var(--accent)}
+  .desc-actions .actn-primary:hover{background:var(--accent-bg)}
+  .desc-actions .actn-success{border-color:var(--success);color:var(--success)}
+  .desc-actions .actn-success:hover{background:#22c55e18}
+
+  /* Right panel - editor + preview + tests */
+  .code-panel{display:flex;flex-direction:column;gap:.75rem;min-height:calc(100vh - 140px)}
+  .toolbar{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  .toolbar .label{color:var(--text-muted);font-size:.8rem;flex:1}
+  .CodeMirror{height:350px;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:14px}
+  .CodeMirror-gutters{background:var(--surface)!important;border-right:1px solid var(--border)!important}
+  .CodeMirror-linenumber{color:var(--text-muted)!important}
+  .cm-s-dracula.CodeMirror{background:var(--surface)!important}
+  .cm-s-dracula .CodeMirror-cursor{border-color:var(--accent)!important}
+  .preview-frame{background:#fff;border-radius:var(--radius-sm);border:1px solid var(--border);width:100%;height:350px}
+  .test-results{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.85rem;flex:1;overflow-y:auto;font-size:.82rem;min-height:80px;max-height:180px}
+  .test-item{padding:.3rem 0;border-bottom:1px solid #1a1a2e;display:flex;gap:.4rem;align-items:flex-start;font-size:.8rem}
+  .test-pass{color:var(--success)}
+  .test-fail{color:var(--error)}
+  .all-pass{color:var(--success);font-weight:600;margin-top:.5rem}
+  .counter{color:var(--text-muted);font-size:.78rem}
+
+  @media(max-width:1024px){
+    .desc-panel{max-height:none;overflow-y:visible}
+    .code-panel{min-height:auto}
+    .CodeMirror{height:280px}
+    .preview-frame{height:280px}
+    .test-results{max-height:140px}
+  }
   </style>
 </head>
 <body>
@@ -56,25 +80,35 @@
     </div>
   </nav>
 
-  <main class="container" style="max-width:1400px;padding:1rem 2rem">
-    <div class="layout">
-      <div class="left-panel">
-        <div class="desc-box" id="descBox"><h3>Loading challenge...</h3></div>
+  <main class="container" style="max-width:1400px;padding:1rem 1.5rem">
+    <div class="breadcrumb" id="breadcrumb">
+      <a href="/learn">Curriculum</a><span class="sep">›</span><span id="crumbTitle" style="color:var(--text-muted)">Loading...</span>
+    </div>
+    <div class="editor-layout">
+      <!-- Left: Description -->
+      <div class="desc-panel" id="descPanel">
+        <div class="desc-card">
+          <div id="descContent" style="color:var(--text-muted)">Loading challenge...</div>
+        </div>
+      </div>
+
+      <!-- Right: Code + Preview + Tests -->
+      <div class="code-panel">
         <div class="toolbar">
           <span class="label" id="langLabel">JavaScript</span>
-          <button class="btn btn-reset" onclick="resetCode()">Reset</button>
+          <button class="btn btn-sm" onclick="resetCode()">Reset</button>
         </div>
         <textarea id="codeEditor"></textarea>
-      </div>
-      <div class="right-panel">
-        <div class="toolbar">
+
+        <div class="toolbar" style="margin-top:.25rem">
           <span class="label">Preview</span>
-          <button class="btn btn-run" onclick="runTests()">▶ Run Tests</button>
-          <button class="btn btn-submit" id="submitBtn" onclick="submitChallenge()" disabled>✅ Submit</button>
+          <button class="btn btn-sm btn-primary" onclick="runTests()">▶ Run Tests</button>
+          <button class="btn btn-sm btn-success" id="submitBtn" onclick="submitChallenge()" disabled>✅ Submit</button>
         </div>
         <iframe id="preview" class="preview-frame" sandbox="allow-scripts"></iframe>
+
         <div class="test-results" id="testResults">
-          <div style="color:#606080">Click "Run Tests" to check your solution.</div>
+          <div style="color:var(--text-muted)">Click "Run Tests" to check your solution.</div>
         </div>
       </div>
     </div>
@@ -84,165 +118,174 @@
   let editor, currentChallenge, sbName, blockName, challengeIdx;
   let allTestsPassed = false;
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const p = new URLSearchParams(location.search);
-    sbName = p.get('sb');
-    blockName = p.get('block');
-    challengeIdx = parseInt(p.get('idx')) || 0;
-    if (sbName && blockName) loadChallenge(sbName, blockName, challengeIdx);
-    else document.getElementById('descBox').innerHTML = '<h3>No challenge</h3><p>Go to <a href="/learn">Curriculum</a> to pick a challenge.</p>';
-  });
-
-  async function loadChallenge(sb, blk, idx) {
-    const res = await fetch(`/data/sb-${sb}.json`);
-    const data = await res.json();
-    const block = data.blocks.find(b => b.name === blk);
-    if (!block || !block.challenges[idx]) return;
-    currentChallenge = block.challenges[idx];
-
-    document.getElementById('descBox').innerHTML =
-      `<h3>${currentChallenge.title}</h3><div>${(currentChallenge.description || '').replace(/</g,'&lt;').replace(/\n/g, '<br>')}</div>`;
-
-    let code = currentChallenge.seed || '';
-    let mode = 'javascript';
-    if (!code) {
-      code = currentChallenge.dashedName?.includes('html') ? '<!DOCTYPE html>\n<html>\n<head>\n  <title></title>\n</head>\n<body>\n\n</body>\n</html>' : '// write your code';
-    }
-    if (code.includes('<html') || code.includes('<!DOCTYPE') || code.includes('<body')) mode = 'htmlmixed';
-    document.getElementById('langLabel').textContent = mode === 'htmlmixed' ? 'HTML' : 'JavaScript';
-
-    if (editor) editor.toTextArea();
-    editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
-      value: code, mode, theme: 'dracula', lineNumbers: true,
-      autoCloseBrackets: true, indentUnit: 2, tabSize: 2, lineWrapping: true
-    });
-    editor.setValue(code);
-    allTestsPassed = false;
-    document.getElementById('submitBtn').disabled = true;
-    document.getElementById('testResults').innerHTML = '<div style="color:#606080">Click "Run Tests" to check your solution.</div>';
-    document.getElementById('preview').srcdoc = '';
+  function html(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  function md(s){
+    if(!s)return'';
+    return s.replace(/<script[\s\S]*?<\/script>/gi,'')
+            .replace(/`([^`]+)`/g,'<code>$1</code>')
+            .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+            .replace(/\n/g,'<br>')
   }
 
-  const ASSERT_POLYFILL = `
-window.__results = [];
-window.__idx = 0;
-window.assert = {
-  _pass: function(m) { window.__results.push({pass:true,msg:m}); },
-  _fail: function(m) { window.__results.push({pass:false,msg:m}); },
-  isTrue: function(v,m) { var i=++window.__idx; v ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected true, got '+v); },
-  isFalse: function(v,m) { var i=++window.__idx; !v ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected false'); },
-  equal: function(a,b,m) { var i=++window.__idx; a==b ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected '+b+', got '+a); },
-  notEqual: function(a,b,m) { var i=++window.__idx; a!=b ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': should not equal '+b); },
-  strictEqual: function(a,b,m) { var i=++window.__idx; a===b ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected === '+b+', got '+a); },
-  notStrictEqual: function(a,b,m) { var i=++window.__idx; a!==b ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': should not be '+b); },
-  deepEqual: function(a,b,m) { var i=++window.__idx; JSON.stringify(a)===JSON.stringify(b) ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': not deeply equal'); },
-  match: function(s,r,m) { var i=++window.__idx; r.test(s) ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected "'+s+'" to match '+r); },
-  lengthOf: function(a,l,m) { var i=++window.__idx; a.length===l ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected length '+l+', got '+a.length); },
-  exists: function(v,m) { var i=++window.__idx; v!=null ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected value to exist'); },
-  isArray: function(v,m) { var i=++window.__idx; Array.isArray(v) ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected array'); },
-  include: function(a,v,m) { var i=++window.__idx; a.indexOf(v)>-1 ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+':'+v+' not in array'); },
-  property: function(o,k,m) { var i=++window.__idx; k in o ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected property '+k); },
-  typeOf: function(v,t,m) { var i=++window.__idx; typeof v===t ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected '+t+', got '+typeof v); },
-  isAbove: function(v,t,m) { var i=++window.__idx; v>t ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected '+v+'>'+t); },
-  isBelow: function(v,t,m) { var i=++window.__idx; v<t ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+': expected '+v+'<'+t); },
-  approximately: function(v,e,d,m) { var i=++window.__idx; Math.abs(v-e)<=d ? this._pass(m||'#'+i+': ok') : this._fail(m||'#'+i+':'+v+'!≈'+e+'±'+d); },
-  throws: function(f,m) { var i=++window.__idx; try{f();this._fail(m||'#'+i+': expected throw');}catch(e){this._pass(m||'#'+i+': ok');} },
-  doesNotThrow: function(f,m) { var i=++window.__idx; try{f();this._pass(m||'#'+i+': ok');}catch(e){this._fail(m||'#'+i+': expected no throw');} },
-  isOk: function(v,m) { this.isTrue(v,m); },
-  isNotOk: function(v,m) { this.isFalse(v,m); },
-  fail: function(m) { this._fail(m||'failed'); },
-  ok: function(v,m) { this.isTrue(v,m); }
-};
-`;
+  document.addEventListener('DOMContentLoaded',function(){
+    const p=new URLSearchParams(location.search);
+    sbName=p.get('sb');blockName=p.get('block');challengeIdx=parseInt(p.get('idx'))||0;
+    if(sbName&&blockName)loadChallenge(sbName,blockName,challengeIdx);
+    else document.getElementById('descContent').innerHTML='<h2>No challenge</h2><p style="color:var(--text-muted);font-size:.88rem">Go to <a href="/learn">Curriculum</a> to pick a challenge.</p>';
+  });
 
-  function runTests() {
-    if (!currentChallenge || !currentChallenge.tests.length) {
-      document.getElementById('testResults').innerHTML = '<div style="color:#606080">No tests for this challenge.</div>';
+  async function loadChallenge(sb,blk,idx){
+    try{
+      const res=await fetch('/data/sb-'+sb+'.json');
+      const data=await res.json();
+      const block=data.blocks.find(b=>b.name===blk);
+      if(!block||!block.challenges[idx])throw new Error('Challenge not found');
+      currentChallenge=block.challenges[idx];
+
+      document.getElementById('crumbTitle').textContent=currentChallenge.title;
+
+      const tests=Array.isArray(currentChallenge.tests)?currentChallenge.tests:[];
+      document.getElementById('descContent').innerHTML=
+        '<h2>'+html(currentChallenge.title)+'</h2>'+
+        '<div class="body">'+(currentChallenge.description?md(currentChallenge.description):'<em>No description</em>')+'</div>'+
+        (currentChallenge.seed?'<div class="section-label">Seed Code</div><div class="seed-block">'+html(currentChallenge.seed)+'</div>':'')+
+        (tests.length?'<div class="section-label">Tests ('+tests.length+')</div>'+tests.map(t=>'<div class="test-item">'+html(t)+'</div>').join(''):'')+
+        '<div class="desc-actions">'+
+          '<a href="/learn" class="actn">← Back</a>'+
+          '<a href="/editor?sb='+encodeURIComponent(sb)+'&block='+encodeURIComponent(blk)+'&idx='+idx+'" class="actn actn-primary">↻ Reload</a>'+
+        '</div>';
+
+      let code=currentChallenge.seed||'';
+      let mode='javascript';
+      if(!code)
+        code=currentChallenge.dashedName?.includes('html')?
+          '<!DOCTYPE html>\n<html>\n<head>\n  <title></title>\n</head>\n<body>\n\n</body>\n</html>':'// write your code';
+      if(code.includes('<html')||code.includes('<!DOCTYPE')||code.includes('<body'))mode='htmlmixed';
+      document.getElementById('langLabel').textContent=mode==='htmlmixed'?'HTML':'JavaScript';
+
+      if(editor)editor.toTextArea();
+      editor=CodeMirror.fromTextArea(document.getElementById('codeEditor'),{
+        value:code,mode,theme:'dracula',lineNumbers:true,
+        autoCloseBrackets:true,indentUnit:2,tabSize:2,lineWrapping:true
+      });
+      editor.setValue(code);
+      allTestsPassed=false;
+      document.getElementById('submitBtn').disabled=true;
+      document.getElementById('testResults').innerHTML='<div style="color:var(--text-muted)">Click "Run Tests" to check your solution.</div>';
+      document.getElementById('preview').srcdoc='';
+    }catch(e){
+      document.getElementById('descContent').innerHTML=
+        '<h2>Error</h2><div style="color:var(--error);font-size:.88rem">'+html(e.message)+
+        '</div><div class="desc-actions"><a href="/learn" class="actn">← Back to Curriculum</a></div>';
+    }
+  }
+
+  const ASSERT_POLYFILL=`
+window.__results=[];
+window.__idx=0;
+window.assert={
+  _pass:function(m){window.__results.push({pass:true,msg:m});},
+  _fail:function(m){window.__results.push({pass:false,msg:m});},
+  isTrue:function(v,m){var i=++window.__idx;v?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected true, got '+v);},
+  isFalse:function(v,m){var i=++window.__idx;!v?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected false');},
+  equal:function(a,b,m){var i=++window.__idx;a==b?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected '+b+', got '+a);},
+  notEqual:function(a,b,m){var i=++window.__idx;a!=b?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': should not equal '+b);},
+  strictEqual:function(a,b,m){var i=++window.__idx;a===b?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected === '+b+', got '+a);},
+  notStrictEqual:function(a,b,m){var i=++window.__idx;a!==b?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': should not be '+b);},
+  deepEqual:function(a,b,m){var i=++window.__idx;JSON.stringify(a)===JSON.stringify(b)?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': not deeply equal');},
+  match:function(s,r,m){var i=++window.__idx;r.test(s)?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected "'+s+'" to match '+r);},
+  lengthOf:function(a,l,m){var i=++window.__idx;a.length===l?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected length '+l+', got '+a.length);},
+  exists:function(v,m){var i=++window.__idx;v!=null?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected value to exist');},
+  isArray:function(v,m){var i=++window.__idx;Array.isArray(v)?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected array');},
+  include:function(a,v,m){var i=++window.__idx;typeof a.indexOf==='function'&&a.indexOf(v)>-1?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+':'+v+' not in array');},
+  property:function(o,k,m){var i=++window.__idx;k in o?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected property '+k);},
+  typeOf:function(v,t,m){var i=++window.__idx;typeof v===t?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected '+t+', got '+typeof v);},
+  isAbove:function(v,t,m){var i=++window.__idx;v>t?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected '+v+'>'+t);},
+  isBelow:function(v,t,m){var i=++window.__idx;v<t?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected '+v+'<'+t);},
+  approximately:function(v,e,d,m){var i=++window.__idx;Math.abs(v-e)<=d?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+':'+v+'!≈'+e+'±'+d);},
+  throws:function(f,m){var i=++window.__idx;try{f();this._fail(m||'#'+i+': expected throw');}catch(e){this._pass(m||'#'+i+': ok');}},
+  doesNotThrow:function(f,m){var i=++window.__idx;try{f();this._pass(m||'#'+i+': ok');}catch(e){this._fail(m||'#'+i+': expected no throw');}},
+  isOk:function(v,m){this.isTrue(v,m);},isNotOk:function(v,m){this.isFalse(v,m);},fail:function(m){this._fail(m||'failed');},ok:function(v,m){this.isTrue(v,m);}
+};`;
+
+  function runTests(){
+    if(!currentChallenge||!currentChallenge.tests.length){
+      document.getElementById('testResults').innerHTML='<div style="color:var(--text-muted)">No tests for this challenge.</div>';
       return;
     }
+    const code=editor.getValue();
+    const isHtml=/<html|<\!DOCTYPE|<body|<div|<h[1-6]|<p|<span|<a /i.test(code);
+    const resultsEl=document.getElementById('testResults');
+    const preview=document.getElementById('preview');
+    resultsEl.innerHTML='<div style="color:var(--warning)">⏳ Running tests...</div>';
 
-    const code = editor.getValue();
-    const isHtml = /<html|<\!DOCTYPE|<body|<div|<h[1-6]|<p|<span|<a /i.test(code);
-    const resultsEl = document.getElementById('testResults');
-    const preview = document.getElementById('preview');
-    resultsEl.innerHTML = '<div style="color:#f59e0b">⏳ Running tests...</div>';
+    const testScript=currentChallenge.tests.map(t=>'try {'+t+'}catch(e){assert.fail(e.message);}').join('\n');
+    const postMsg='window.parent.postMessage({type:\'test-results\',results:window.__results||[]},\'*\');';
+    const fullScript=ASSERT_POLYFILL+'\n'+testScript+'\n'+postMsg;
 
-    const testScript = currentChallenge.tests.map(t =>
-      'try { ' + t + ' } catch(e) { assert.fail(e.message); }'
-    ).join('\n');
-
-    const postMsg = 'window.parent.postMessage({ type: \'test-results\', results: window.__results || [] }, \'*\');';
-
-    const fullScript = ASSERT_POLYFILL + '\n' + testScript + '\n' + postMsg;
-
-    if (isHtml) {
-      const wrapped = code.replace('</body>', '<script>' + fullScript + '</script>\n</body>');
-      preview.srcdoc = wrapped.includes('</body>') ? wrapped : code + '<script>' + fullScript + '</script>';
-    } else {
-      preview.srcdoc = '<!DOCTYPE html><html><head><script>' + fullScript + '</script></head><body></body></html>';
+    if(isHtml){
+      const wrapped=code.replace('</body>','<script>'+fullScript+'</script>\n</body>');
+      preview.srcdoc=wrapped.includes('</body>')?wrapped:code+'<script>'+fullScript+'</script>';
+    }else{
+      preview.srcdoc='<!DOCTYPE html><html><head><script>'+fullScript+'</script></head><body></body></html>';
     }
   }
 
-  window.addEventListener('message', function(e) {
-    if (e.data.type === 'test-results') {
-      const results = e.data.results || [];
-      const resultsEl = document.getElementById('testResults');
-      const passed = results.filter(r => r.pass);
-      const failed = results.filter(r => !r.pass);
+  window.addEventListener('message',function(e){
+    if(e.data.type==='test-results'){
+      const results=e.data.results||[];
+      const resultsEl=document.getElementById('testResults');
+      const passed=results.filter(r=>r.pass);
+      const failed=results.filter(r=>!r.pass);
+      const passCount=passed.length;const total=results.length;
 
-      resultsEl.innerHTML = results.map((r, i) =>
-        `<div class="test-item">
-          <span class="${r.pass ? 'test-pass' : 'test-fail'}">${r.pass ? '✅' : '❌'}</span>
-          <span>${r.msg}</span>
-        </div>`
+      resultsEl.innerHTML=results.map((r,i)=>
+        '<div class="test-item">'+
+          '<span class="'+(r.pass?'test-pass':'test-fail')+'">'+(r.pass?'✓':'✗')+'</span>'+
+          '<span>'+(r.msg||'')+'</span>'+
+        '</div>'
       ).join('');
 
-      const passCount = passed.length;
-      const total = results.length;
-      if (passCount === total && total > 0) {
-        allTestsPassed = true;
-        document.getElementById('submitBtn').disabled = false;
-        resultsEl.innerHTML += `<div class="all-pass" style="margin-top:0.5rem">✅ All ${total} tests passed! Click Submit.</div>`;
-      } else {
-        allTestsPassed = false;
-        document.getElementById('submitBtn').disabled = true;
-        resultsEl.innerHTML += `<div style="color:#f59e0b;margin-top:0.5rem">${passCount}/${total} passed</div>`;
+      if(passCount===total&&total>0){
+        allTestsPassed=true;
+        document.getElementById('submitBtn').disabled=false;
+        resultsEl.innerHTML+='<div class="all-pass">✓ All '+total+' tests passed! Click Submit.</div>';
+      }else{
+        allTestsPassed=false;
+        document.getElementById('submitBtn').disabled=true;
+        resultsEl.innerHTML+='<div style="color:var(--warning);margin-top:.4rem">'+passCount+'/'+total+' passed</div>';
       }
     }
   });
 
-  function resetCode() {
-    if (currentChallenge) {
-      editor.setValue(currentChallenge.seed || '');
-      document.getElementById('testResults').innerHTML = '<div style="color:#606080">Code reset. Click "Run Tests" to check.</div>';
-      document.getElementById('preview').srcdoc = '';
-      allTestsPassed = false;
-      document.getElementById('submitBtn').disabled = true;
+  function resetCode(){
+    if(currentChallenge){
+      editor.setValue(currentChallenge.seed||'');
+      document.getElementById('testResults').innerHTML='<div style="color:var(--text-muted)">Code reset. Click "Run Tests" to check.</div>';
+      document.getElementById('preview').srcdoc='';
+      allTestsPassed=false;document.getElementById('submitBtn').disabled=true;
     }
   }
 
-  async function submitChallenge() {
-    if (!allTestsPassed) return;
-    const userData = localStorage.getItem('fcc_user');
-    const token = localStorage.getItem('fcc_token');
-    if (!token || !userData) { alert('Login to save progress'); return; }
-
-    try {
-      const user = JSON.parse(userData);
-      const res = await fetch('/api/progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, challengeId: currentChallenge.id, title: currentChallenge.title })
+  async function submitChallenge(){
+    if(!allTestsPassed)return;
+    const userData=localStorage.getItem('fcc_user');
+    const token=localStorage.getItem('fcc_token');
+    if(!token||!userData){alert('Login to save progress');return;}
+    try{
+      const user=JSON.parse(userData);
+      const res=await fetch('/api/progress',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({userId:user.id,challengeId:currentChallenge.id,title:currentChallenge.title})
       });
-      const data = await res.json();
-      if (data.status === 'ok' || data.status === 'already_completed') {
-        const btn = document.getElementById('submitBtn');
-        btn.textContent = '✅ Completed!';
-        btn.disabled = true;
-        if (data.leveledUp) alert(`🎉 Level up! You're now Level ${data.level}!`);
-        if (data.newBadges?.length) alert('🏅 New badge unlocked!');
+      const data=await res.json();
+      if(data.status==='ok'||data.status==='already_completed'){
+        const btn=document.getElementById('submitBtn');
+        btn.textContent='✅ Completed!';btn.disabled=true;
+        if(data.leveledUp)alert('🎉 Level up! Level '+data.level+'!');
+        if(data.newBadges?.length)alert('🏅 New badge!');
       }
-    } catch (e) { alert('Error saving'); }
+    }catch(e){alert('Error saving');}
   }
   </script>
 </body>
