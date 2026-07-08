@@ -1,7 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-
-@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root{
   --bg:#10112a;
@@ -219,6 +218,7 @@ footer a{color:var(--primary)}
   h1{font-size:1.75rem}
   .grid-sb,.grid-blocks{grid-template-columns:1fr}
   #navAuth{padding:6px 12px;font-size:.78rem}
+  .hide-mobile{display:none}
 }
 @media(max-width:480px){
   .logo{font-size:1.1rem}

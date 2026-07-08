@@ -263,10 +263,10 @@
 
   // Check auth
   (function(){
-    const user=JSON.parse(localStorage.getItem('user')||'null');
+    const fccUser=JSON.parse(localStorage.getItem('fcc_user')||'null');
     const navAuth=document.getElementById('navAuth');
-    if(user){
-      navAuth.textContent=user.name||user.email||'My Profile';
+    if(fccUser){
+      navAuth.textContent=fccUser.name||fccUser.email||'My Profile';
       navAuth.href='/profile/';
     }
   })();
