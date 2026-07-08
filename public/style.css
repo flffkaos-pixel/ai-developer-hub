@@ -3,18 +3,18 @@
 html{scroll-behavior:smooth}
 
 :root{
-  --bg:#10112a;
-  --surface-deep:#0a0a23;
-  --surface:rgba(42,42,64,0.4);
-  --surface-solid:#1d1d36;
-  --surface-hover:rgba(42,42,64,0.6);
-  --surface-card:#2a2a40;
-  --surface-container:#32324d;
-  --surface-container-high:#272741;
-  --surface-container-low:#191932;
-  --surface-bright:#373752;
-  --border:rgba(59,59,79,0.5);
-  --border-solid:#3b3b4f;
+  --bg:#0d0d24;
+  --surface-deep:#0a0a1e;
+  --surface:rgba(35,35,60,0.85);
+  --surface-solid:#1a1a35;
+  --surface-hover:rgba(35,35,60,0.95);
+  --surface-card:#222244;
+  --surface-container:#2a2a4e;
+  --surface-container-high:#252548;
+  --surface-container-low:#181830;
+  --surface-bright:#303058;
+  --border:rgba(60,60,90,0.5);
+  --border-solid:#3a3a5c;
   --primary:#c0c1ff;
   --primary-hover:#a0a1ff;
   --primary-bg:rgba(192,193,255,0.1);

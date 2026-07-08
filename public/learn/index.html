@@ -7,36 +7,33 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,200" />
     <style>
-        .learn-layout{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
-        .learn-layout .sticky{position:sticky;top:96px}
-        @media(max-width:900px){.learn-layout{grid-template-columns:1fr}.learn-layout .sticky{position:static}}
-        .sb-item{padding:12px 16px;cursor:pointer;border-radius:var(--radius-sm);transition:var(--transition);border-left:3px solid transparent}
-        .sb-item:hover{background:var(--surface)!important}
-        .sb-item.active{background:var(--primary-bg);border-left-color:var(--primary)}
-        .sb-item.active .sb-title{color:var(--primary)}
-        .block{padding:20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);transition:var(--transition);cursor:pointer}
-        .block:hover{border-color:var(--primary);background:var(--surface-hover)}
-        .block.completed{border-left:3px solid var(--success)}
-        .block.current{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
-        .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
-        .status-dot.done{background:var(--success)}
-        .status-dot.pending{background:var(--text-muted)}
-        .status-dot.current{background:var(--primary)}
-        .breadcrumb-context{font-size:.85rem;color:var(--text-muted);margin-bottom:16px}
-        .breadcrumb-context span{cursor:pointer;transition:var(--transition)}
-        .breadcrumb-context span:hover{color:var(--primary)}
-        .breadcrumb-context .sep{color:var(--border-solid);margin:0 4px;pointer-events:none}
-        .content-area{padding:24px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border)}
-        .content-area h2{font-size:1.3rem;margin-bottom:8px}
-        .content-area .meta{font-size:.85rem;color:var(--text-muted);margin-bottom:20px}
-        .content-area p{color:var(--text-secondary);font-size:.95rem;line-height:1.7;margin-bottom:12px}
-        .code-block{background:var(--surface-deep);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin:16px 0;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--terminal);position:relative}
-        .code-block .copy-btn{position:absolute;top:8px;right:8px;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);padding:4px 10px;border-radius:6px;cursor:pointer;transition:var(--transition);font-size:.75rem}
-        .code-block .copy-btn:hover{background:var(--surface-hover);color:var(--text)}
-        .complete-btn{margin-top:24px;width:100%}
-        .progress-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin:16px 0}
-        .progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:4px;transition:width .5s ease}
-        @media(max-width:600px){.nav-links .hide-mobile{display:none}}
+        .search-bar{display:flex;gap:8px;margin-bottom:24px;max-width:500px}
+        .search-bar input{flex:1;padding:10px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.9rem}
+        .search-bar input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg)}
+        .sb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+        .sb-card{padding:20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:var(--transition)}
+        .sb-card:hover{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 12px 24px -8px rgba(99,102,241,0.12)}
+        .sb-card h3{font-family:'Hanken Grotesk',sans-serif;font-size:1rem;margin-bottom:4px}
+        .sb-card .sb-meta{font-size:.78rem;color:var(--text-muted)}
+        .sb-card .sb-progress{margin-top:8px;height:3px;background:var(--border);border-radius:4px;overflow:hidden}
+        .sb-card .sb-progress .fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:4px;transition:width .4s ease}
+        .sb-card .sb-done{font-size:.72rem;color:var(--success);margin-top:4px}
+        .detail-view{padding:24px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border)}
+        .detail-view h2{font-size:1.2rem;margin-bottom:4px}
+        .detail-view .total{font-size:.82rem;color:var(--text-muted);margin-bottom:16px}
+        .block-list{display:flex;flex-direction:column;gap:4px}
+        .block-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;transition:var(--transition);text-decoration:none;color:inherit}
+        .block-row:hover{border-color:var(--primary);background:var(--surface-hover)}
+        .block-row .info{flex:1}
+        .block-row .name{font-size:.88rem;font-weight:500;color:var(--text)}
+        .block-row .count{font-size:.75rem;color:var(--text-muted)}
+        .block-row .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+        .block-row .dot.some{background:var(--primary)}
+        .block-row .dot.all{background:var(--success)}
+        .block-row .dot.none{background:var(--border-solid)}
+        .back-btn{display:inline-flex;align-items:center;gap:4px;color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-bottom:16px;transition:var(--transition)}
+        .back-btn:hover{color:var(--primary)}
+        @media(max-width:600px){.sb-cards{grid-template-columns:1fr}}
     </style>
 </head>
 <body>
@@ -49,7 +46,7 @@
             <div class="nav-links">
                 <a href="/">Home</a>
                 <a href="/learn/" class="active">Learn</a>
-                <a href="/editor/" class="hide-mobile">Editor</a>
+                <a href="/editor/">Editor</a>
                 <a href="/chat/" class="hide-mobile">Chat</a>
                 <a href="/tools/" class="hide-mobile">Tools</a>
                 <a href="/login/" id="navAuth">Sign In</a>
@@ -57,237 +54,185 @@
         </div>
     </nav>
 
-    <main>
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="/">Home</a>
-                <span class="sep">›</span>
-                <span class="current">Learn</span>
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="/">Home</a><span class="sep">›</span><span id="bcCurrent" class="current">Learn</span>
+        </div>
+
+        <div id="mainView">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:4px">
+                <div>
+                    <h1 style="margin-bottom:4px">커리큘럼</h1>
+                    <p style="color:var(--text-secondary);font-size:.9rem">99개 과목 · 20,000+ 챌린지. 클릭해서 학습을 시작하세요.</p>
+                </div>
+                <div id="totalProgress" style="font-size:.82rem;color:var(--text-muted);text-align:right">로딩 중...</div>
             </div>
-
-            <h1>AI 학습 커리큘럼</h1>
-            <p style="color:var(--text-secondary);margin-bottom:24px">체계적인 커리큘럼으로 AI 개발을 마스터하세요.</p>
-
-            <div class="learn-layout">
-                <!-- Sidebar: Curriculum list -->
-                <aside class="sticky">
-                    <div class="content-area">
-                        <h4 style="font-family:'Hanken Grotesk',sans-serif;margin-bottom:12px">Curriculum</h4>
-                        <div class="progress-bar" id="progressBarWrapper" style="display:none">
-                            <div class="fill" id="progressFill" style="width:0%"></div>
-                        </div>
-                        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px" id="progressText">0 / 0 완료</p>
-                        <div id="sidebarList"></div>
-                    </div>
-                </aside>
-
-                <!-- Main content area -->
-                <section id="contentArea">
-                    <div class="content-area fade-in" id="placeholder">
-                        <div style="text-align:center;padding:60px 20px">
-                            <span class="material-symbols-outlined" style="font-size:3rem;color:var(--primary);margin-bottom:16px;opacity:.6">school</span>
-                            <h2>커리큘럼을 선택하세요</h2>
-                            <p style="color:var(--text-muted)">왼쪽에서 학습할 과목을 선택하면 내용이 표시됩니다.</p>
-                        </div>
-                    </div>
-
-                    <div class="content-area fade-in" id="contentDisplay" style="display:none">
-                        <div class="breadcrumb-context">
-                            <span onclick="goToCurriculum()">Curriculum</span>
-                            <span class="sep">›</span>
-                            <span id="breadcrumbSubj"></span>
-                        </div>
-
-                        <h2 id="contentTitle"></h2>
-                        <div class="meta">
-                            <span id="contentMeta"></span>
-                            <span style="margin:0 8px;color:var(--border-solid)">·</span>
-                            <span id="contentStatus"></span>
-                        </div>
-
-                        <div id="contentBody"></div>
-
-                        <button class="btn btn-primary complete-btn" id="completeBtn" onclick="toggleComplete()">✔ 완료로 표시</button>
-                    </div>
-                </section>
+            <div class="search-bar">
+                <span class="material-symbols-outlined" style="color:var(--text-muted);position:absolute;margin:10px 0 0 12px;font-size:1.2rem">search</span>
+                <input type="text" id="searchInput" placeholder="과목 검색..." oninput="filterSubjects()" style="padding-left:36px">
             </div>
+            <div class="sb-cards" id="sbCards"></div>
+        </div>
+
+        <div id="detailView" style="display:none">
+            <div class="back-btn" onclick="showMainView()">
+                <span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span>
+                모든 과목으로 돌아가기
+            </div>
+            <div class="detail-view" id="detailContent"></div>
         </div>
     </main>
 
-    <footer>
-        <p>© 2026 AI Developer Hub. Built with passion for AI developers.</p>
-    </footer>
+    <footer><p>© 2026 AI Developer Hub. Built with passion for AI developers.</p></footer>
 
     <script>
-        const curriculum = [
-            { id:'intro-ai', title:'AI 개론', blocks:[
-                { title:'AI란 무엇인가', content:'## AI 개론\n\n인공지능(AI)은 컴퓨터 시스템이 인간의 지능을 모방하여 작업을 수행할 수 있게 하는 기술입니다. 머신러닝, 딥러닝, 자연어 처리 등 다양한 하위 분야로 나뉩니다.\n\n### 핵심 개념\n- **지도 학습**: 정답이 있는 데이터로 학습\n- **비지도 학습**: 정답 없이 데이터 패턴 학습\n- **강화 학습**: 보상을 통해 최적 행동 학습' },
-                { title:'AI의 역사와 발전', content:'## AI 역사\n\n1950년대 튜링 테스트에서 시작하여 현재의 생성형 AI까지.\n\n### 주요里程碑\n- **1950**: 튜링 테스트 제안\n- **2012**: AlexNet, 딥러닝 혁명\n- **2022**: ChatGPT, 생성형 AI 대중화\n- **2025**: AI 에이전트 시대' },
-                { title:'AI 활용 사례', content:'## 활용 사례\n\n### 의료\n- 질병 진단 보조\n- 신약 개발\n\n### 금융\n- 사기 탐지\n- 알고리즘 트레이딩\n\n### 자율주행\n- 객체 인식\n- 경로 계획' }
-            ]},
-            { id:'python', title:'Python 기초', blocks:[
-                { title:'Python 시작하기', content:'## Python 시작\n\n```python\nprint("Hello, AI World!")\n\n# 변수 선언\nname = "AI"\nage = 2026\n\n# 리스트\nskills = ["Python", "ML", "DL"]\n```\n\n인터프리터 방식의 쉬운 문법으로 AI 개발에 가장 널리 사용됩니다.' },
-                { title:'자료형과 연산', content:'## 자료형\n\n```python\n# 숫자형\nx = 10\ny = 3.14\n\n# 문자열\ns = "hello"\ns.upper()  # "HELLO"\n\n# 불리언\nflag = True\n\n# 연산자\nresult = (x + y) * 2\n```' },
-                { title:'함수와 모듈', content:'## 함수\n\n```python\ndef greet(name):\n    return f"Hello, {name}!"\n\n# 람다 함수\nsquare = lambda x: x**2\n\n# 모듈 임포트\nimport numpy as np\nimport pandas as pd\n```' }
-            ]},
-            { id:'ml-basics', title:'머신러닝 기초', blocks:[
-                { title:'머신러닝 개요', content:'## 머신러닝\n\n데이터로부터 패턴을 학습하여 예측/분류하는 알고리즘.\n\n### 머신러닝 vs 전통적 프로그래밍\n- 전통적: 규칙 + 데이터 → 결과\n- ML: 데이터 + 결과 → 규칙\n\n즉, 명시적 프로그래밍 없이 데이터로부터 학습합니다.' },
-                { title:'회귀 분석', content:'## 선형 회귀\n\n```python\nfrom sklearn.linear_model import LinearRegression\n\nmodel = LinearRegression()\nmodel.fit(X_train, y_train)\npredictions = model.predict(X_test)\n\nprint(f"계수: {model.coef_}")\nprint(f"결정계수: {model.score(X_test, y_test):.2f}")\n```' },
-                { title:'분류 알고리즘', content:'## 분류\n\n```python\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score\n\nmodel = RandomForestClassifier(n_estimators=100)\nmodel.fit(X_train, y_train)\ny_pred = model.predict(X_test)\n\nprint(f"정확도: {accuracy_score(y_test, y_pred):.2f}")\n```' }
-            ]},
-            { id:'dl-basics', title:'딥러닝 입문', blocks:[
-                { title:'신경망 기초', content:'## 신경망\n\n퍼셉트론에서 시작하여 다층 신경망(MLP)으로 발전.\n\n```python\nimport tensorflow as tf\n\nmodel = tf.keras.Sequential([\n    tf.keras.layers.Dense(64, activation="relu"),\n    tf.keras.layers.Dense(32, activation="relu"),\n    tf.keras.layers.Dense(10, activation="softmax")\n])\n```\n\n- **입력층**: 데이터 수신\n- **은닉층**: 특징 추출\n- **출력층**: 결과 생성' },
-                { title:'CNN과 이미지 처리', content:'## CNN\n\n```python\nmodel = tf.keras.Sequential([\n    tf.keras.layers.Conv2D(32, (3,3), activation="relu", input_shape=(28,28,1)),\n    tf.keras.layers.MaxPooling2D(2,2),\n    tf.keras.layers.Flatten(),\n    tf.keras.layers.Dense(10, activation="softmax")\n])\n```\n\nConvolution + Pooling 구조로 이미지 특징 추출에 탁월합니다.' },
-                { title:'RNN과 시퀀스', content:'## RNN\n\n순차 데이터 처리를 위한 신경망.\n\n```python\nmodel = tf.keras.Sequential([\n    tf.keras.layers.LSTM(64, input_shape=(seq_len, n_features)),\n    tf.keras.layers.Dense(1)\n])\nmodel.compile(optimizer="adam", loss="mse")\n```\n\nLSTM은 장기 의존성 문제를 해결한 RNN 변형입니다.' }
-            ]},
-            { id:'nlp', title:'자연어 처리', blocks:[
-                { title:'텍스트 전처리', content:'## 텍스트 전처리\n\n```python\nimport re\nfrom konlpy.tag import Okt\n\ntext = "AI 개발 재미있네요!"\nokt = Okt()\ntokens = okt.morphs(text)\nprint(tokens)  # ["AI", "개발", "재미있", "네요", "!"]\n```\n\n- 토큰화 → 불용어 제거 → 정규화' },
-                { title:'Word Embedding', content:'## 임베딩\n\n```python\n# Word2Vec\nfrom gensim.models import Word2Vec\n\nsentences = [["ai","developer","hub"], ["learn","python"]]\nmodel = Word2Vec(sentences, vector_size=100, window=5)\n\n# 유사 단어 찾기\nmodel.wv.most_similar("ai")\n```\n\n단어를 밀집 벡터로 표현하여 의미적 유사도를 포착합니다.' },
-                { title:'Transformer와 BERT', content:'## Transformer\n\n`Attention is All You Need` (2017)\n\n```python\nfrom transformers import pipeline\n\nclassifier = pipeline("sentiment-analysis")\nresult = classifier("I love AI!")[0]\nprint(result)  # {"label":"POSITIVE","score":0.999}\n```\n\nSelf-Attention 메커니즘으로 병렬 처리와 장거리 의존성 학습이 가능합니다.' }
-            ]},
-            { id:'project', title:'최종 프로젝트', blocks:[
-                { title:'프로젝트 기획', content:'## 프로젝트\n\n직접 AI 모델을 기획, 개발, 배포하는 종합 프로젝트를 수행합니다.\n\n### 주제 예시\n- 감정 분석 챗봇\n- 이미지 분류 웹앱\n- 주가 예측 대시보드' },
-                { title:'모델 개발', content:'## 구현\n\n선택한 주제에 맞춰 데이터 수집, 전처리, 모델 학습을 진행합니다.\n\n```python\n# 모델 저장\nmodel.save("my_model.keras")\n\n# 저장된 모델 로드\nloaded = tf.keras.models.load_model("my_model.keras")\n```' },
-                { title:'배포 및 발표', content:'## 배포\n\nFlask/FastAPI로 API 서버를 구축하고 클라우드에 배포합니다.\n\n```python\nfrom flask import Flask, request, jsonify\napp = Flask(__name__)\n\n@app.route("/predict", methods=["POST"])\ndef predict():\n    data = request.json\n    result = model.predict(data)\n    return jsonify({"prediction": result.tolist()})\n```' }
-            ]}
-        ];
-
-        let currentSubj = null;
-        let currentBlockIdx = null;
+        let allSubjects = [];
+        let translations = {};
         let completed = JSON.parse(localStorage.getItem('learnCompleted') || '{}');
-        let currentTheme = '';
+        let allChallengeIds = new Set();
 
-        function renderSidebar(){
-            const list = document.getElementById('sidebarList');
-            list.innerHTML = '';
-            curriculum.forEach((subj, si) => {
-                const div = document.createElement('div');
-                div.style.marginBottom = '4px';
-                const allDone = subj.blocks.every((b, bi) => completed[subj.id+'-'+bi]);
-                const someDone = subj.blocks.some((b, bi) => completed[subj.id+'-'+bi]);
-                div.innerHTML = `
-                    <div class="sb-item ${currentSubj?.id===subj.id?'active':''}" onclick="selectSubject(${si})">
-                        <div style="display:flex;align-items:center;gap:8px">
-                            <span class="status-dot ${allDone?'done':someDone?'current':'pending'}"></span>
-                            <span class="sb-title" style="font-weight:500;font-size:.9rem">${subj.title}</span>
-                        </div>
-                        <div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;padding-left:18px">
-                            ${subj.blocks.filter((b,bi)=>completed[subj.id+'-'+bi]).length}/${subj.blocks.length} 완료
-                        </div>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-            updateProgress();
-        }
+        async function init() {
+            try {
+                const [idxRes, transRes] = await Promise.all([
+                    fetch('/data/index.json'),
+                    fetch('/data/ko/translations.json')
+                ]);
+                const idx = await idxRes.json();
+                translations = await transRes.json();
 
-        function selectSubject(si){
-            currentSubj = curriculum[si];
-            currentBlockIdx = null;
-            document.getElementById('placeholder').style.display = 'none';
-            document.getElementById('contentDisplay').style.display = 'block';
-            document.getElementById('breadcrumbSubj').textContent = currentSubj.title;
-            document.getElementById('contentTitle').textContent = currentSubj.title;
-            document.getElementById('contentMeta').textContent = currentSubj.blocks.length + '개 학습 블록';
-            const doneCount = currentSubj.blocks.filter((b,bi)=>completed[currentSubj.id+'-'+bi]).length;
-            document.getElementById('contentStatus').textContent = doneCount + '/' + currentSubj.blocks.length + ' 완료';
-            document.getElementById('completeBtn').style.display = 'none';
-            let bodyHtml = '<div class="grid-blocks">';
-            currentSubj.blocks.forEach((b, bi) => {
-                const isDone = completed[currentSubj.id+'-'+bi];
-                bodyHtml += `
-                    <div class="block ${isDone?'completed':''}" onclick="selectBlock(${si},${bi})">
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-                            <span class="status-dot ${isDone?'done':'pending'}"></span>
-                            <span style="font-weight:500">${b.title}</span>
-                        </div>
-                        <div style="font-size:.82rem;color:var(--text-muted);">${b.content.split('\n')[0].replace(/^#+ /,'')}...</div>
-                    </div>
-                `;
-            });
-            bodyHtml += '</div>';
-            document.getElementById('contentBody').innerHTML = bodyHtml;
-            renderSidebar();
-        }
-
-        function selectBlock(si, bi){
-            currentSubj = curriculum[si];
-            currentBlockIdx = bi;
-            const block = currentSubj.blocks[bi];
-            document.getElementById('placeholder').style.display = 'none';
-            document.getElementById('contentDisplay').style.display = 'block';
-            document.getElementById('breadcrumbSubj').textContent = currentSubj.title + ' › ' + block.title;
-            document.getElementById('contentTitle').textContent = block.title;
-            document.getElementById('contentMeta').textContent = currentSubj.title;
-            const isDone = completed[currentSubj.id+'-'+bi];
-            document.getElementById('contentStatus').textContent = isDone ? '✅ 완료' : '📖 학습 중';
-            const btn = document.getElementById('completeBtn');
-            btn.textContent = isDone ? '↩ 미완료로 되돌리기' : '✔ 완료로 표시';
-            btn.className = 'btn ' + (isDone ? 'btn-ghost' : 'btn-primary') + ' complete-btn';
-            document.getElementById('contentBody').innerHTML = formatContent(block.content);
-            renderSidebar();
-        }
-
-        function formatContent(md){
-            let html = md
-                .replace(/```(\w+)?\n([\s\S]*?)```/g, (m, lang, code) => {
-                    const langLabel = lang || 'code';
-                    return `<div class="code-block"><div style="font-size:.72rem;color:var(--text-muted);margin-bottom:8px">${langLabel}</div><pre style="margin:0">${escapeHtml(code.trim())}</pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>`;
-                })
-                .replace(/^### (.+)$/gm, '<h4 style="margin-top:20px;margin-bottom:8px">$1</h4>')
-                .replace(/^## (.+)$/gm, '<h3 style="margin-top:28px;margin-bottom:12px;font-family:\'Hanken Grotesk\',sans-serif">$1</h3>')
-                .replace(/^# (.+)$/gm, '<h2 style="margin-top:28px;margin-bottom:12px">$1</h2>')
-                .replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--text)">$1</strong>')
-                .replace(/- (.+)/g, '<li style="color:var(--text-secondary);margin-bottom:4px">• $1</li>')
-                .replace(/\n\n/g, '</p><p style="color:var(--text-secondary);font-size:.95rem;line-height:1.7">');
-            return '<p style="color:var(--text-secondary);font-size:.95rem;line-height:1.7">' + html + '</p>';
-        }
-
-        function escapeHtml(t){
-            const d = document.createElement('div');
-            d.textContent = t;
-            return d.innerHTML;
-        }
-
-        function copyCode(btn){
-            const code = btn.closest('.code-block').querySelector('pre').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                btn.textContent = 'Copied!';
-                setTimeout(() => btn.textContent = 'Copy', 1500);
-            });
-        }
-
-        function toggleComplete(){
-            if(!currentSubj || currentBlockIdx===null) return;
-            const key = currentSubj.id+'-'+currentBlockIdx;
-            if(completed[key]){
-                delete completed[key];
-            } else {
-                completed[key] = true;
+                // Load each superblock's data to count challenges and collect IDs
+                const superblocks = idx.superblocks || [];
+                for (const sb of superblocks) {
+                    try {
+                        const res = await fetch(`/data/sb-${sb.name}.json`);
+                        const data = await res.json();
+                        const blocks = data.blocks || [];
+                        let totalChallenges = 0;
+                        let blockDetails = [];
+                        for (const b of blocks) {
+                            const challenges = b.challenges || [];
+                            totalChallenges += challenges.length;
+                            blockDetails.push({
+                                name: b.name,
+                                count: challenges.length,
+                                challengeIds: challenges.map(c => c.id || c.dashedName)
+                            });
+                            challenges.forEach(c => allChallengeIds.add(c.id || c.dashedName));
+                        }
+                        allSubjects.push({
+                            name: sb.name,
+                            blocks: blockDetails,
+                            total: totalChallenges
+                        });
+                    } catch(e) {
+                        allSubjects.push({ name: sb.name, blocks: [], total: 0 });
+                    }
+                }
+                renderSubjects(allSubjects);
+                updateTotalProgress();
+            } catch(e) {
+                document.getElementById('sbCards').innerHTML = `<p style="color:var(--error)">데이터를 불러오지 못했습니다: ${e.message}</p>`;
             }
-            localStorage.setItem('learnCompleted', JSON.stringify(completed));
-            selectBlock(curriculum.indexOf(currentSubj), currentBlockIdx);
         }
 
-        function goToCurriculum(){
-            if(currentSubj) selectSubject(curriculum.indexOf(currentSubj));
+        function t(name) {
+            return translations?.superblocks?.[name] || name.replace(/-/g, ' ');
         }
 
-        function updateProgress(){
-            const total = curriculum.reduce((a,s) => a + s.blocks.length, 0);
-            const done = Object.keys(completed).length;
+        function getProgress(subjName) {
+            const sb = allSubjects.find(s => s.name === subjName);
+            if (!sb) return { done: 0, total: 0 };
+            let done = 0, total = 0;
+            for (const b of sb.blocks) {
+                for (const cid of b.challengeIds) {
+                    total++;
+                    if (completed[cid]) done++;
+                }
+            }
+            return { done, total };
+        }
+
+        function renderSubjects(list) {
+            const container = document.getElementById('sbCards');
+            if (!list.length) {
+                container.innerHTML = '<p style="color:var(--text-muted)">검색 결과가 없습니다.</p>';
+                return;
+            }
+            container.innerHTML = list.map(sb => {
+                const { done, total } = getProgress(sb.name);
+                const pct = total ? Math.round(done/total*100) : 0;
+                return `<div class="sb-card" onclick="showDetail('${sb.name}')">
+                    <h3>${t(sb.name)}</h3>
+                    <div class="sb-meta">${sb.total.toLocaleString()}개 챌린지</div>
+                    ${total > 0 ? `
+                        <div class="sb-progress"><div class="fill" style="width:${pct}%"></div></div>
+                        <div class="sb-done">${done}/${total} 완료 (${pct}%)</div>
+                    ` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function filterSubjects() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allSubjects.filter(sb => t(sb.name).toLowerCase().includes(q));
+            renderSubjects(filtered);
+        }
+
+        function showDetail(subjName) {
+            const sb = allSubjects.find(s => s.name === subjName);
+            if (!sb) return;
+            document.getElementById('mainView').style.display = 'none';
+            document.getElementById('detailView').style.display = 'block';
+            document.getElementById('bcCurrent').textContent = t(subjName);
+
+            let totalDone = 0, totalAll = 0;
+            const blocksHtml = sb.blocks.map(b => {
+                let done = 0;
+                for (const cid of b.challengeIds) {
+                    totalAll++;
+                    if (completed[cid]) { done++; totalDone++; }
+                }
+                const status = done === b.count ? 'all' : done > 0 ? 'some' : 'none';
+                return `<a href="/editor/?sb=${sb.name}&block=${b.name}&idx=0" class="block-row">
+                    <span class="dot ${status}"></span>
+                    <div class="info">
+                        <div class="name">${b.name.replace(/-/g, ' ')}</div>
+                        <div class="count">${b.count}개 챌린지 ${done > 0 ? `· ${done} 완료` : ''}</div>
+                    </div>
+                    <span class="material-symbols-outlined" style="color:var(--text-muted);font-size:1.1rem">chevron_right</span>
+                </a>`;
+            }).join('');
+
+            const pct = totalAll ? Math.round(totalDone/totalAll*100) : 0;
+            document.getElementById('detailContent').innerHTML = `
+                <h2>${t(subjName)}</h2>
+                <div class="total">${sb.total.toLocaleString()}개 챌린지 · ${sb.blocks.length}개 블록</div>
+                <div style="margin-bottom:16px">
+                    <div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden">
+                        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:4px;transition:width .4s"></div>
+                    </div>
+                    <div style="font-size:.78rem;color:var(--text-muted);margin-top:4px">${totalDone}/${totalAll} 완료 (${pct}%)</div>
+                </div>
+                <div class="block-list">${blocksHtml}</div>
+            `;
+        }
+
+        function showMainView() {
+            document.getElementById('mainView').style.display = 'block';
+            document.getElementById('detailView').style.display = 'none';
+            document.getElementById('bcCurrent').textContent = 'Learn';
+        }
+
+        function updateTotalProgress() {
+            const total = allChallengeIds.size;
+            const done = Object.keys(completed).filter(k => allChallengeIds.has(k)).length;
             const pct = total ? Math.round(done/total*100) : 0;
-            const bar = document.getElementById('progressBarWrapper');
-            const fill = document.getElementById('progressFill');
-            const txt = document.getElementById('progressText');
-            if(total > 0){
-                bar.style.display = 'block';
-                fill.style.width = pct + '%';
-                txt.textContent = `${done} / ${total} 완료 (${pct}%)`;
-            }
+            document.getElementById('totalProgress').innerHTML = total
+                ? `${done.toLocaleString()} / ${total.toLocaleString()} 완료 · ${pct}%`
+                : `20,000+ 챌린지`;
         }
 
-        // Check for auth
+        // Auth
         (function(){
             const fccUser = JSON.parse(localStorage.getItem('fcc_user') || 'null');
             const navAuth = document.getElementById('navAuth');
@@ -297,7 +242,7 @@
             }
         })();
 
-        renderSidebar();
+        init();
     </script>
 </body>
 </html>
