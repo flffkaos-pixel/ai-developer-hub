@@ -17,15 +17,11 @@
   .editor-layout{display:grid;grid-template-columns:400px 1fr;gap:24px;min-height:calc(100vh - 160px);max-width:1400px;margin:0 auto;padding:24px 40px}
   @media(max-width:1100px){.editor-layout{grid-template-columns:1fr;padding:16px}}
   .desc-panel{display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 160px);overflow-y:auto}
-  .desc-panel::-webkit-scrollbar{width:4px}
-  .desc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:var(--transition);line-height:1.7}
-  .desc-card h2{font-family:'Hanken Grotesk',sans-serif;font-size:1.15rem;font-weight:600;margin-bottom:8px;word-break:break-word}
-  .desc-card .meta{font-size:.78rem;color:var(--text-muted);margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap}
-  .desc-card .meta .tag{padding:2px 8px;border-radius:4px;background:var(--primary-bg);color:var(--primary);font-size:.72rem}
+  .desc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;line-height:1.7}
+  .desc-card h2{font-family:'Hanken Grotesk',sans-serif;font-size:1.15rem;font-weight:600;margin-bottom:8px}
   .desc-card .body{font-size:.88rem;color:var(--text-secondary);line-height:1.75}
   .desc-card .body code{background:var(--surface-deep);color:var(--secondary);padding:2px 6px;border-radius:4px;font-size:.82rem;font-family:'JetBrains Mono',monospace}
   .desc-card .body pre{margin:12px 0;padding:12px;background:var(--surface-deep);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:.82rem;font-family:'JetBrains Mono',monospace}
-  .desc-card .body pre code{background:none;padding:0;color:var(--terminal)}
   .desc-card .section-label{font-size:.75rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-top:16px;margin-bottom:6px}
   .desc-card .seed-block{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:12px;background:var(--surface-deep);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;line-height:1.4;color:var(--terminal)}
   .desc-card .test-item{font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:6px 10px;margin-bottom:4px;background:var(--surface-deep);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted)}
@@ -46,7 +42,6 @@
   .test-pass{color:var(--success)}
   .test-fail{color:var(--error)}
   .all-pass{color:var(--success);font-weight:600;margin-top:8px}
-  .counter{color:var(--text-muted);font-size:.78rem}
   @media(max-width:1100px){
     .desc-panel{max-height:none;overflow-y:visible}
     .code-panel{min-height:auto}
@@ -59,10 +54,7 @@
 <body>
   <nav>
     <div class="nav-inner">
-      <a href="/" class="logo">
-        <span class="logo-icon">✦</span>
-        AI Developer Hub
-      </a>
+      <a href="/" class="logo"><span class="logo-icon">✦</span> AI Developer Hub</a>
       <div class="nav-links">
         <a href="/">Home</a>
         <a href="/learn/">Learn</a>
@@ -76,24 +68,18 @@
 
   <main style="padding-top:72px">
     <div class="editor-layout">
-      <!-- Left: Description -->
       <div class="desc-panel" id="descPanel">
         <div class="desc-card">
           <div id="descContent" style="color:var(--text-muted);font-size:.9rem">Loading challenge...</div>
         </div>
       </div>
-
-      <!-- Right: Code + Preview + Tests -->
       <div class="code-panel">
         <div class="toolbar">
           <span class="material-symbols-outlined" style="font-size:1.1rem;color:var(--text-muted)">code</span>
           <span class="label" id="langLabel">JavaScript</span>
-          <button class="btn btn-sm btn-ghost" onclick="resetCode()">
-            <span class="material-symbols-outlined" style="font-size:1rem">refresh</span> Reset
-          </button>
+          <button class="btn btn-sm btn-ghost" onclick="resetCode()"><span class="material-symbols-outlined" style="font-size:1rem">refresh</span> Reset</button>
         </div>
         <textarea id="codeEditor"></textarea>
-
         <div class="toolbar" style="margin-top:4px">
           <span class="material-symbols-outlined" style="font-size:1.1rem;color:var(--text-muted)">play_arrow</span>
           <span class="label">Preview & Tests</span>
@@ -103,7 +89,6 @@
           </button>
         </div>
         <iframe id="preview" class="preview-frame" sandbox="allow-scripts"></iframe>
-
         <div class="test-results" id="testResults">
           <div style="color:var(--text-muted)">Click "Run Tests" to check your solution.</div>
         </div>
@@ -112,10 +97,41 @@
   </main>
 
   <script>
+  const DEMO_CHALLENGES = {
+    'html-intro': {
+      title: 'Say Hello to HTML',
+      dashedName: 'say-hello-to-html',
+      description: 'Create an h1 element with the text "Hello World" inside it.',
+      seed: '<h1>Hello</h1>',
+      tests: ['assert.exists(document.querySelector("h1"));', 'assert.match(code, /hello/i);']
+    },
+    'js-variables': {
+      title: 'JavaScript Variables',
+      dashedName: 'js-variables',
+      description: 'Declare a variable named **name** and assign it the value `"AI Developer"`.',
+      seed: '// Declare your variable here',
+      tests: ['assert.exists(name);', 'assert.strictEqual(name, "AI Developer");']
+    },
+    'js-function': {
+      title: 'Create a Function',
+      dashedName: 'js-function',
+      description: 'Create a function named **add** that takes two parameters and returns their sum.',
+      seed: '// Write your function here',
+      tests: ['assert.exists(add);', 'assert.strictEqual(add(2,3), 5);', 'assert.strictEqual(add(-1,1), 0);']
+    },
+    'css-style': {
+      title: 'Style with CSS',
+      dashedName: 'css-style',
+      description: 'Set the color of all **h1** elements to **blue**.',
+      seed: '<style>\n  /* Write your CSS here */\n</style>\n<h1>Hello World</h1>',
+      tests: ['assert.match(code, /color\\s*:\\s*blue/i);', "assert.strictEqual(window.getComputedStyle(document.querySelector('h1')).color, 'rgb(0, 0, 255)');"]
+    }
+  };
+
   let editor, currentChallenge, sbName, blockName, challengeIdx;
   let allTestsPassed = false;
 
-  function html(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  function html(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
   function md(s){
     if(!s)return'';
     return s.replace(/<script[\s\S]*?<\/script>/gi,'')
@@ -128,147 +144,169 @@
     const p=new URLSearchParams(location.search);
     sbName=p.get('sb');blockName=p.get('block');challengeIdx=parseInt(p.get('idx'))||0;
     if(sbName&&blockName)loadChallenge(sbName,blockName,challengeIdx);
-    else document.getElementById('descContent').innerHTML='<h2>No challenge</h2><p style="color:var(--text-muted);font-size:.88rem">Go to <a href="/learn/">Curriculum</a> to pick a challenge.</p>';
+    else showDemoList();
   });
 
-  async function loadChallenge(sb,blk,idx){
-    try{
-      const res=await fetch('/data/sb-'+sb+'.json');
-      const data=await res.json();
-      const block=data.blocks.find(b=>b.name===blk);
-      if(!block||!block.challenges[idx])throw new Error('Challenge not found');
-      currentChallenge=block.challenges[idx];
+  function showDemoList() {
+    const keys = Object.keys(DEMO_CHALLENGES);
+    document.getElementById('descContent').innerHTML =
+      '<h2>코드 에디터</h2>' +
+      '<div class="body">아래 데모 챌린지를 선택하거나 <a href="/learn/">Learn</a>에서 과목을 선택하세요.</div>' +
+      '<div class="section-label">데모 챌린지</div>' +
+      keys.map(k => `<div class="test-item" onclick="loadDemo('${k}')" style="cursor:pointer">▶ ${DEMO_CHALLENGES[k].title}</div>`).join('');
+    setupDefaultEditor();
+  }
 
-      const tests=Array.isArray(currentChallenge.tests)?currentChallenge.tests:[];
-      document.getElementById('descContent').innerHTML=
-        '<h2>'+html(currentChallenge.title)+'</h2>'+
-        '<div class="meta">'+
-          (currentChallenge.dashedName?'<span class="tag">'+html(currentChallenge.dashedName)+'</span>':'')+
-          '<span>'+tests.length+' test'+(tests.length!==1?'s':'')+'</span>'+
-        '</div>'+
-        '<div class="body">'+(currentChallenge.description?md(currentChallenge.description):'<em>No description</em>')+'</div>'+
-        (currentChallenge.seed?'<div class="section-label">Seed Code</div><div class="seed-block">'+html(currentChallenge.seed)+'</div>':'')+
-        (tests.length?'<div class="section-label">Tests ('+tests.length+')</div>'+tests.map(t=>'<div class="test-item">'+html(t)+'</div>').join(''):'')+
-        '<div class="desc-actions">'+
-          '<a href="/learn/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">arrow_back</span> Back</a>'+
-          '<a href="/editor?sb='+encodeURIComponent(sb)+'&block='+encodeURIComponent(blk)+'&idx='+idx+'" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">refresh</span> Reload</a>'+
-        '</div>';
+  function loadDemo(key) {
+    const ch = DEMO_CHALLENGES[key];
+    if (!ch) return;
+    currentChallenge = ch;
+    renderChallenge(ch);
+  }
 
-      let code=currentChallenge.seed||'';
-      let mode='javascript';
-      if(!code)
-        code=currentChallenge.dashedName?.includes('html')?
-          '<!DOCTYPE html>\n<html>\n<head>\n  <title></title>\n</head>\n<body>\n\n</body>\n</html>':'// write your code';
-      if(code.includes('<html')||code.includes('<!DOCTYPE')||code.includes('<body'))mode='htmlmixed';
-      document.getElementById('langLabel').textContent=mode==='htmlmixed'?'HTML':'JavaScript';
+  function renderChallenge(ch) {
+    const tests = Array.isArray(ch.tests) ? ch.tests : [];
+    document.getElementById('descContent').innerHTML =
+      '<h2>' + html(ch.title) + '</h2>' +
+      '<div class="body">' + (ch.description ? md(ch.description) : '') + '</div>' +
+      (ch.seed ? '<div class="section-label">Seed Code</div><div class="seed-block">' + html(ch.seed) + '</div>' : '') +
+      (tests.length ? '<div class="section-label">Tests (' + tests.length + ')</div>' + tests.map(t => '<div class="test-item">' + html(t) + '</div>').join('') : '') +
+      '<div class="desc-actions">' +
+        '<a href="/learn/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">arrow_back</span> Back</a>' +
+        '<a href="/editor/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">list</span> Demos</a>' +
+      '</div>';
 
-      if(editor)editor.toTextArea();
-      editor=CodeMirror.fromTextArea(document.getElementById('codeEditor'),{
-        value:code,mode,theme:'dracula',lineNumbers:true,
-        autoCloseBrackets:true,indentUnit:2,tabSize:2,lineWrapping:true
-      });
-      editor.setValue(code);
-      allTestsPassed=false;
-      document.getElementById('submitBtn').disabled=true;
-      document.getElementById('testResults').innerHTML='<div style="color:var(--text-muted)">Click "Run Tests" to check your solution.</div>';
-      document.getElementById('preview').srcdoc='';
-    }catch(e){
-      document.getElementById('descContent').innerHTML=
-        '<h2>Error</h2><div style="color:var(--error);font-size:.88rem">'+html(e.message)+
-        '</div><div class="desc-actions"><a href="/learn/" class="actn">← Back to Curriculum</a></div>';
+    let code = ch.seed || '';
+    let mode = 'javascript';
+    if (!code) { code = ch.dashedName && ch.dashedName.includes('html') ? '<!DOCTYPE html>\n<html>\n<head>\n  <title></title>\n</head>\n<body>\n\n</body>\n</html>' : '// write your code'; }
+    if (code.includes('<html') || code.includes('<!DOCTYPE') || code.includes('<body')) mode = 'htmlmixed';
+    document.getElementById('langLabel').textContent = mode === 'htmlmixed' ? 'HTML' : 'JavaScript';
+
+    if (editor) editor.toTextArea();
+    editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
+      value: code, mode: mode, theme: 'dracula', lineNumbers: true,
+      autoCloseBrackets: true, indentUnit: 2, tabSize: 2, lineWrapping: true
+    });
+    editor.setValue(code);
+    allTestsPassed = false;
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">Click "Run Tests" to check your solution.</div>';
+    document.getElementById('preview').srcdoc = '';
+  }
+
+  function setupDefaultEditor() {
+    const code = '// Write your code here\nfunction greet(name) {\n  return "Hello, " + name + "!";\n}\n\nconsole.log(greet("World"));';
+    if (editor) editor.toTextArea();
+    editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
+      value: code, mode: 'javascript', theme: 'dracula', lineNumbers: true,
+      autoCloseBrackets: true, indentUnit: 2, tabSize: 2, lineWrapping: true
+    });
+  }
+
+  async function loadChallenge(sb, blk, idx) {
+    document.getElementById('descContent').innerHTML = '<div class="loading">⏳ 로딩 중...</div>';
+    try {
+      const res = await fetch('/data/sb-' + sb + '.json');
+      const data = await res.json();
+      const block = data.blocks.find(b => b.name === blk);
+      if (!block || !block.challenges[idx]) throw new Error('Challenge not found');
+      currentChallenge = block.challenges[idx];
+      renderChallenge(currentChallenge);
+    } catch(e) {
+      document.getElementById('descContent').innerHTML =
+        '<h2>연결 필요</h2>' +
+        '<div class="body">서버에서 데이터를 불러올 수 없습니다. 아래 데모 챌린지를 이용하거나 로컬 서버를 실행하세요.</div>' +
+        '<div class="section-label">데모 챌린지</div>' +
+        Object.keys(DEMO_CHALLENGES).map(k => `<div class="test-item" onclick="loadDemo('${k}')" style="cursor:pointer">▶ ${DEMO_CHALLENGES[k].title}</div>`).join('') +
+        '<div class="desc-actions"><a href="/learn/" class="actn">← Back to Curriculum</a></div>';
+      setupDefaultEditor();
     }
   }
 
-  const ASSERT_POLYFILL=`window.__results=[];window.__idx=0;window.assert={_pass:function(m){window.__results.push({pass:true,msg:m});},_fail:function(m){window.__results.push({pass:false,msg:m});},isTrue:function(v,m){var i=++window.__idx;v?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected true, got '+v);},isFalse:function(v,m){var i=++window.__idx;!v?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected false');},equal:function(a,b,m){var i=++window.__idx;a==b?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected '+b+', got '+a);},notEqual:function(a,b,m){var i=++window.__idx;a!=b?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': should not equal '+b);},strictEqual:function(a,b,m){var i=++window.__idx;a===b?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected === '+b+', got '+a);},notStrictEqual:function(a,b,m){var i=++window.__idx;a!==b?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': should not be '+b);},deepEqual:function(a,b,m){var i=++window.__idx;JSON.stringify(a)===JSON.stringify(b)?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': not deeply equal');},match:function(s,r,m){var i=++window.__idx;r.test(s)?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected "'+s+'" to match '+r);},lengthOf:function(a,l,m){var i=++window.__idx;a.length===l?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected length '+l+', got '+a.length);},exists:function(v,m){var i=++window.__idx;v!=null?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected value to exist');},isArray:function(v,m){var i=++window.__idx;Array.isArray(v)?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected array');},include:function(a,v,m){var i=++window.__idx;typeof a.indexOf==='function'&&a.indexOf(v)>-1?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+':'+v+' not in array');},property:function(o,k,m){var i=++window.__idx;k in o?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected property '+k);},typeOf:function(v,t,m){var i=++window.__idx;typeof v===t?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected '+t+', got '+typeof v);},isAbove:function(v,t,m){var i=++window.__idx;v>t?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected '+v+'>'+t);},isBelow:function(v,t,m){var i=++window.__idx;v<t?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+': expected '+v+'<'+t);},approximately:function(v,e,d,m){var i=++window.__idx;Math.abs(v-e)<=d?this._pass(m||'#'+i+': ok'):this._fail(m||'#'+i+':'+v+'!≈'+e+'±'+d);},throws:function(f,m){var i=++window.__idx;try{f();this._fail(m||'#'+i+': expected throw');}catch(e){this._pass(m||'#'+i+': ok');}},doesNotThrow:function(f,m){var i=++window.__idx;try{f();this._pass(m||'#'+i+': ok');}catch(e){this._fail(m||'#'+i+': expected no throw');}},isOk:function(v,m){this.isTrue(v,m);},isNotOk:function(v,m){this.isFalse(v,m);},fail:function(m){this._fail(m||'failed');},ok:function(v,m){this.isTrue(v,m);}};`;
+  const ASSERT_POLYFILL = 'window.__results=[];window.__idx=0;window.assert={_pass:function(m){window.__results.push({pass:true,msg:m});},_fail:function(m){window.__results.push({pass:false,msg:m});},isTrue:function(v,m){var i=++window.__idx;v?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected true, got "+v);},isFalse:function(v,m){var i=++window.__idx;!v?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected false");},equal:function(a,b,m){var i=++window.__idx;a==b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected "+b+", got "+a);},notEqual:function(a,b,m){var i=++window.__idx;a!=b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": should not equal "+b);},strictEqual:function(a,b,m){var i=++window.__idx;a===b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected === "+b+", got "+a);},exists:function(v,m){var i=++window.__idx;v!=null?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected value to exist");},isArray:function(v,m){var i=++window.__idx;Array.isArray(v)?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected array");},match:function(s,r,m){var i=++window.__idx;r.test(s)?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected match");},include:function(a,v,m){var i=++window.__idx;typeof a.indexOf==="function"&&a.indexOf(v)>-1?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+":"+v+" not in array");},throws:function(f,m){var i=++window.__idx;try{f();this._fail(m||"#"+i+": expected throw");}catch(e){this._pass(m||"#"+i+": ok");}},typeOf:function(v,t,m){var i=++window.__idx;typeof v===t?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected "+t+", got "+typeof v);}};';
 
-  function runTests(){
-    if(!currentChallenge||!currentChallenge.tests.length){
-      document.getElementById('testResults').innerHTML='<div style="color:var(--text-muted)">No tests for this challenge.</div>';
+  function runTests() {
+    if (!currentChallenge || !currentChallenge.tests || !currentChallenge.tests.length) {
+      document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">No tests for this challenge.</div>';
       return;
     }
-    const code=editor.getValue();
-    const isHtml=/<html|<\!DOCTYPE|<body|<div|<h[1-6]|<p|<span|<a /i.test(code);
-    const resultsEl=document.getElementById('testResults');
-    const preview=document.getElementById('preview');
-    resultsEl.innerHTML='<div style="color:var(--warning)">⏳ Running tests...</div>';
+    const code = editor.getValue();
+    const isHtml = /<html|<\!DOCTYPE|<body|<div|<h[1-6]|<p|<span/i.test(code);
+    const resultsEl = document.getElementById('testResults');
+    const preview = document.getElementById('preview');
+    resultsEl.innerHTML = '<div style="color:var(--warning)">⏳ Running tests...</div>';
 
-    const testScript=currentChallenge.tests.map(t=>'try {'+t+'}catch(e){assert.fail(e.message);}').join('\n');
-    const postMsg='window.parent.postMessage({type:\'test-results\',results:window.__results||[]},\'*\');';
-    const fullScript=ASSERT_POLYFILL+'\n'+testScript+'\n'+postMsg;
+    const testScript = currentChallenge.tests.map(t => 'try {' + t + '}catch(e){assert.fail(e.message);}').join('\n');
+    const postMsg = 'window.parent.postMessage({type:"test-results",results:window.__results||[]},"*");';
+    const fullScript = ASSERT_POLYFILL + '\n' + testScript + '\n' + postMsg;
 
-    if(isHtml){
-      const wrapped=code.replace('</body>','<script>'+fullScript+'</script>\n</body>');
-      preview.srcdoc=wrapped.includes('</body>')?wrapped:code+'<script>'+fullScript+'</script>';
-    }else{
-      preview.srcdoc='<!DOCTYPE html><html><head><script>'+fullScript+'</script></head><body></body></html>';
+    if (isHtml) {
+      const wrapped = code.replace('</body>', '<script>' + fullScript + '</script>\n</body>');
+      preview.srcdoc = wrapped.includes('</body>') ? wrapped : code + '<script>' + fullScript + '</script>';
+    } else {
+      preview.srcdoc = '<!DOCTYPE html><html><head><script>' + fullScript + '</script></head><body></body></html>';
     }
   }
 
-  window.addEventListener('message',function(e){
-    if(e.data.type==='test-results'){
-      const results=e.data.results||[];
-      const resultsEl=document.getElementById('testResults');
-      const passed=results.filter(r=>r.pass);
-      const failed=results.filter(r=>!r.pass);
-      const passCount=passed.length;const total=results.length;
+  window.addEventListener('message', function(e) {
+    if (e.data.type === 'test-results') {
+      const results = e.data.results || [];
+      const resultsEl = document.getElementById('testResults');
+      const passed = results.filter(r => r.pass);
+      const failed = results.filter(r => !r.pass);
+      const passCount = passed.length;
+      const total = results.length;
 
-      resultsEl.innerHTML=results.map((r,i)=>
-        '<div class="test-item">'+
-          '<span class="'+(r.pass?'test-pass':'test-fail')+'">'+(r.pass?'✓':'✗')+'</span>'+
-          '<span>'+(r.msg||'')+'</span>'+
-        '</div>'
+      resultsEl.innerHTML = results.map((r, i) =>
+        '<div class="test-item"><span class="' + (r.pass ? 'test-pass' : 'test-fail') + '">' + (r.pass ? '✓' : '✗') + '</span><span>' + (r.msg || '') + '</span></div>'
       ).join('');
 
-      if(passCount===total&&total>0){
-        allTestsPassed=true;
-        document.getElementById('submitBtn').disabled=false;
-        resultsEl.innerHTML+='<div class="all-pass">✓ All '+total+' tests passed! Click Submit.</div>';
-      }else{
-        allTestsPassed=false;
-        document.getElementById('submitBtn').disabled=true;
-        resultsEl.innerHTML+='<div style="color:var(--warning);margin-top:.4rem">'+passCount+'/'+total+' passed</div>';
+      if (passCount === total && total > 0) {
+        allTestsPassed = true;
+        document.getElementById('submitBtn').disabled = false;
+        resultsEl.innerHTML += '<div class="all-pass">✓ All ' + total + ' tests passed!</div>';
+      } else {
+        allTestsPassed = false;
+        document.getElementById('submitBtn').disabled = true;
+        resultsEl.innerHTML += '<div style="color:var(--warning);margin-top:.4rem">' + passCount + '/' + total + ' passed</div>';
       }
     }
   });
 
-  function resetCode(){
-    if(currentChallenge){
-      editor.setValue(currentChallenge.seed||'');
-      document.getElementById('testResults').innerHTML='<div style="color:var(--text-muted)">Code reset. Click "Run Tests" to check.</div>';
-      document.getElementById('preview').srcdoc='';
-      allTestsPassed=false;document.getElementById('submitBtn').disabled=true;
+  function resetCode() {
+    if (currentChallenge) {
+      editor.setValue(currentChallenge.seed || '');
+      document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">Code reset.</div>';
+      document.getElementById('preview').srcdoc = '';
+      allTestsPassed = false;
+      document.getElementById('submitBtn').disabled = true;
     }
   }
 
-  async function submitChallenge(){
-    if(!allTestsPassed)return;
-    const userData=localStorage.getItem('fcc_user');
-    const token=localStorage.getItem('fcc_token');
-    if(!token||!userData){alert('Login to save progress');return;}
-    try{
-      const user=JSON.parse(userData);
-      const res=await fetch('/api/progress',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({userId:user.id,challengeId:currentChallenge.id,title:currentChallenge.title})
+  async function submitChallenge() {
+    if (!allTestsPassed) return;
+    const token = localStorage.getItem('fcc_token');
+    const userData = localStorage.getItem('fcc_user');
+    if (!token || !userData) { alert('Login to save progress'); return; }
+    try {
+      const user = JSON.parse(userData);
+      const res = await fetch('/api/progress', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, challengeId: currentChallenge.id || currentChallenge.dashedName, title: currentChallenge.title })
       });
-      const data=await res.json();
-      if(data.status==='ok'||data.status==='already_completed'){
-        const btn=document.getElementById('submitBtn');
-        btn.textContent='✅ Completed!';btn.disabled=true;
-        if(data.leveledUp)alert('🎉 Level up! Level '+data.level+'!');
-        if(data.newBadges?.length)alert('🏅 New badge!');
+      const data = await res.json();
+      if (data.status === 'ok' || data.status === 'already_completed') {
+        const btn = document.getElementById('submitBtn');
+        btn.textContent = '✅ Completed!';
+        btn.disabled = true;
       }
-    }catch(e){alert('Error saving');}
+    } catch (e) { alert('Error saving'); }
   }
 
-  // Check auth
-  (function(){
-    const fccUser=JSON.parse(localStorage.getItem('fcc_user')||'null');
-    const navAuth=document.getElementById('navAuth');
-    if(fccUser){
-      navAuth.textContent=fccUser.name||fccUser.email||'My Profile';
-      navAuth.href='/profile/';
-    }
+  (function() {
+    const u = JSON.parse(localStorage.getItem('fcc_user') || 'null');
+    const a = document.getElementById('navAuth');
+    if (u) { a.textContent = u.name || u.email || 'Profile'; a.href = '/profile/'; }
   })();
   </script>
 </body>
