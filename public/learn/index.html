@@ -9,8 +9,8 @@
 <script src="/data/curriculum.js"></script>
 <style>
 .sb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
-.sb-card{padding:20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:var(--transition)}
-.sb-card:hover{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 12px 24px -8px rgba(99,102,241,0.12)}
+.sb-card,.card-hover{padding:20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:var(--transition)}
+.sb-card:hover,.card-hover:hover{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 12px 24px -8px rgba(99,102,241,0.12)}
 .sb-card h3{font-family:'Hanken Grotesk',sans-serif;font-size:1rem;margin-bottom:4px}
 .sb-card .meta{font-size:.78rem;color:var(--text-muted)}
 .search-box{position:relative;max-width:500px;margin-bottom:24px}
@@ -18,14 +18,15 @@
 .search-box input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg)}
 .search-box .ico{position:absolute;left:12px;top:10px;color:var(--text-muted);font-size:1.2rem}
 .detail{padding:24px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border)}
-.block-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;transition:var(--transition);text-decoration:none;color:inherit;margin-bottom:4px}
-.block-row:hover{border-color:var(--primary);background:var(--surface-hover)}
-.block-row .flex{flex:1}
-.block-row .name{font-size:.88rem;font-weight:500}
-.block-row .sub{font-size:.75rem;color:var(--text-muted)}
-.block-row .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--border-solid)}
-.block-row .dot.some{background:var(--primary)}
-.block-row .dot.all{background:var(--success)}
+.block-row,.challenge-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;transition:var(--transition);text-decoration:none;color:inherit;margin-bottom:4px}
+.block-row:hover,.challenge-row:hover{border-color:var(--primary);background:var(--surface-hover)}
+.block-row .flex,.challenge-row .flex{flex:1}
+.block-row .name,.challenge-row .name{font-size:.88rem;font-weight:500}
+.block-row .sub,.challenge-row .sub{font-size:.75rem;color:var(--text-muted)}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
+.dot.some{background:var(--primary)}
+.dot.all{background:var(--success)}
+.dot.none{background:var(--border-solid)}
 .back{display:inline-flex;align-items:center;gap:4px;color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-bottom:16px;transition:var(--transition)}
 .back:hover{color:var(--primary)}
 .loading{text-align:center;padding:60px 20px;color:var(--text-muted)}
@@ -74,6 +75,14 @@
     </div>
     <div class="detail" id="detailContent"><div class="loading">⏳ 로딩 중...</div></div>
   </div>
+
+  <div id="challengeView" style="display:none">
+    <div class="back" id="backToBlocks">
+      <span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span>
+      <span id="backLabel">블록 목록</span>
+    </div>
+    <div class="detail" id="challengeContent"><div class="loading">⏳ 로딩 중...</div></div>
+  </div>
 </main>
 
 <footer><p>© 2026 AI Developer Hub</p></footer>
@@ -82,16 +91,18 @@
 let completed = JSON.parse(localStorage.getItem('learnCompleted') || '{}');
 let subjects = window.__curriculum?.subjects || [];
 let translations = window.__curriculum?.translations || {};
+let activeSubject = null;
+let activeBlockData = null;
 
 function t(name) { return translations[name] || name.replace(/-/g, ' '); }
 
 function renderAll() {
   document.getElementById('totalPct').textContent = Object.keys(completed).length + '개 완료';
   document.getElementById('sbGrid').innerHTML = subjects.map(sb =>
-    `<div class="sb-card" onclick="openSubject('${sb.n}')">
-      <h3>${t(sb.n)}</h3>
-      <div class="meta">${sb.t.toLocaleString()}개 챌린지 · ${sb.b.length}개 블록</div>
-    </div>`
+    '<div class="sb-card" onclick="openSubject(\'' + sb.n + '\')">' +
+      '<h3>' + t(sb.n) + '</h3>' +
+      '<div class="meta">' + sb.t.toLocaleString() + '개 챌린지 · ' + sb.b.length + '개 블록</div>' +
+    '</div>'
   ).join('');
 }
 
@@ -99,18 +110,18 @@ function filterSubjects() {
   const q = document.getElementById('searchInput').value.toLowerCase();
   document.getElementById('sbGrid').innerHTML = subjects
     .filter(sb => t(sb.n).toLowerCase().includes(q))
-    .map(sb => `<div class="sb-card" onclick="openSubject('${sb.n}')">
-      <h3>${t(sb.n)}</h3>
-      <div class="meta">${sb.t.toLocaleString()}개 챌린지 · ${sb.b.length}개 블록</div>
-    </div>`)
+    .map(sb => '<div class="sb-card" onclick="openSubject(\'' + sb.n + '\')">' +
+      '<h3>' + t(sb.n) + '</h3>' +
+      '<div class="meta">' + sb.t.toLocaleString() + '개 챌린지 · ' + sb.b.length + '개 블록</div>' +
+    '</div>')
     .join('') || '<p style="color:var(--text-muted);padding:20px">검색 결과가 없습니다.</p>';
 }
 
 async function openSubject(name) {
-  const sb = subjects.find(s => s.n === name);
-  if (!sb) return;
+  activeSubject = name;
   document.getElementById('mainView').style.display = 'none';
   document.getElementById('detailView').style.display = 'block';
+  document.getElementById('challengeView').style.display = 'none';
   document.getElementById('bcLabel').textContent = t(name);
   document.getElementById('detailContent').innerHTML = '<div class="loading">⏳ 로딩 중...</div>';
 
@@ -119,7 +130,8 @@ async function openSubject(name) {
     const data = await res.json();
     renderDetail(name, data.blocks || []);
   } catch {
-    renderDetail(name, sb.b.map(b => ({ name: b.n, challenges: [], count: b.c })));
+    const sb = subjects.find(s => s.n === name);
+    renderDetail(name, sb ? sb.b.map(b => ({ name: b.n, challenges: [], count: b.c })) : []);
   }
 }
 
@@ -133,21 +145,20 @@ function renderDetail(name, blocks) {
     if (!challenges.length) totalAll += cnt;
     totalDone += done;
     const status = done === cnt && cnt > 0 ? 'all' : done > 0 ? 'some' : 'none';
-    return `<a href="/editor/?sb=${name}&block=${b.name}&idx=0" class="block-row">
-      <span class="dot ${status}"></span>
-      <div class="flex">
-        <div class="name">${b.name.replace(/-/g, ' ')}</div>
-        <div class="sub">${cnt}개 챌린지${done > 0 ? ' · ' + done + ' 완료' : ''}</div>
-      </div>
-      <span class="material-symbols-outlined" style="color:var(--text-muted);font-size:1.1rem">chevron_right</span>
-    </a>`;
+    return '<div class="block-row" onclick="openBlock(\'' + name + '\',\'' + b.name.replace(/'/g,"\\'") + '\')">' +
+      '<span class="dot ' + status + '"></span>' +
+      '<div class="flex">' +
+        '<div class="name">' + b.name.replace(/-/g, ' ') + '</div>' +
+        '<div class="sub">' + cnt + '개 챌린지' + (done > 0 ? ' · ' + done + ' 완료' : '') + '</div>' +
+      '</div>' +
+      '<span class="material-symbols-outlined" style="color:var(--text-muted);font-size:1.1rem">chevron_right</span>' +
+    '</div>';
   }).join('');
 
   const pct = totalAll ? Math.round(totalDone/totalAll*100) : 0;
   document.getElementById('detailContent').innerHTML =
     '<h2 style="margin-bottom:4px">' + t(name) + '</h2>' +
-    '<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px">' +
-      blocks.length + '개 블록 · ' + totalAll.toLocaleString() + '개 챌린지</div>' +
+    '<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px">' + blocks.length + '개 블록 · ' + totalAll.toLocaleString() + '개 챌린지</div>' +
     '<div style="margin-bottom:16px">' +
       '<div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden">' +
         '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:4px"></div>' +
@@ -156,9 +167,56 @@ function renderDetail(name, blocks) {
     '</div><div>' + list + '</div>';
 }
 
+async function openBlock(sbName, blockName) {
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('challengeView').style.display = 'block';
+  document.getElementById('bcLabel').textContent = t(sbName) + ' › ' + blockName.replace(/-/g, ' ');
+  document.getElementById('backLabel').textContent = t(sbName);
+  document.getElementById('backToBlocks').onclick = function(){ showBlocks(sbName); };
+  document.getElementById('challengeContent').innerHTML = '<div class="loading">⏳ 로딩 중...</div>';
+
+  try {
+    const res = await fetch('/data/sb-' + sbName + '.json');
+    const data = await res.json();
+    const block = data.blocks.find(b => b.name === blockName);
+    if (block && block.challenges) {
+      activeBlockData = block.challenges;
+      renderChallenges(block.challenges, sbName, blockName);
+      return;
+    }
+  } catch(e) {}
+  document.getElementById('challengeContent').innerHTML = '<p style="color:var(--text-muted)">챌린지 목록을 불러올 수 없습니다.</p>';
+}
+
+function renderChallenges(challenges, sbName, blockName) {
+  let done = 0, total = challenges.length;
+  const list = challenges.map((c, i) => {
+    const isDone = completed[c.id] || completed[c.dashedName];
+    if (isDone) done++;
+    return '<a href="/editor/?sb=' + sbName + '&block=' + blockName + '&idx=' + i + '" class="challenge-row">' +
+      '<span class="dot ' + (isDone ? 'all' : 'none') + '" style="display:inline-block"></span>' +
+      '<div class="flex"><div class="name">' + (c.title || 'Step ' + (i+1)) + '</div>' +
+      '<div class="sub">' + (c.dashedName || '') + (isDone ? ' · 완료' : '') + '</div></div>' +
+      '<span class="material-symbols-outlined" style="color:var(--text-muted);font-size:1.1rem">chevron_right</span>' +
+    '</a>';
+  }).join('');
+
+  document.getElementById('challengeContent').innerHTML =
+    '<h2 style="margin-bottom:4px">' + blockName.replace(/-/g, ' ') + '</h2>' +
+    '<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px">' + total + '개 챌린지' + (done > 0 ? ' · ' + done + ' 완료' : '') + '</div>' +
+    '<div>' + list + '</div>';
+}
+
+function showBlocks(sbName) {
+  document.getElementById('detailView').style.display = 'block';
+  document.getElementById('challengeView').style.display = 'none';
+  document.getElementById('bcLabel').textContent = t(sbName);
+}
+
 function showMain() {
   document.getElementById('mainView').style.display = 'block';
   document.getElementById('detailView').style.display = 'none';
+  document.getElementById('challengeView').style.display = 'none';
   document.getElementById('bcLabel').textContent = 'Learn';
 }
 
