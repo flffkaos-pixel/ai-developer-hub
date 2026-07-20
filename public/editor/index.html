@@ -50,18 +50,24 @@
     .test-results{max-height:140px}
   }
   </style>
+  <script src="/lang.js"></script>
 </head>
 <body>
   <nav>
     <div class="nav-inner">
       <a href="/" class="logo"><span class="logo-icon">✦</span> AI Developer Hub</a>
       <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/learn/">Learn</a>
-        <a href="/editor/" class="active">Editor</a>
-        <a href="/chat/" class="hide-mobile">Chat</a>
-        <a href="/tools/" class="hide-mobile">Tools</a>
-        <a href="/login/" id="navAuth">Sign In</a>
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/learn/" data-i18n="nav_learn">Learn</a>
+        <a href="/editor/" class="active" data-i18n="nav_editor">Editor</a>
+        <a href="/chat/" class="hide-mobile" data-i18n="nav_chat">Chat</a>
+        <a href="/tools/" class="hide-mobile" data-i18n="nav_tools">Tools</a>
+        <select id="langSelect" onchange="setLang(this.value)">
+          <option value="ko">🇰🇷 한국어</option>
+          <option value="en">🇺🇸 English</option>
+          <option value="ja">🇯🇵 日本語</option>
+        </select>
+        <a href="/login/" id="navAuth" data-i18n="nav_signin">Sign In</a>
       </div>
     </div>
   </nav>
@@ -77,20 +83,20 @@
         <div class="toolbar">
           <span class="material-symbols-outlined" style="font-size:1.1rem;color:var(--text-muted)">code</span>
           <span class="label" id="langLabel">JavaScript</span>
-          <button class="btn btn-sm btn-ghost" id="resetBtn"><span class="material-symbols-outlined" style="font-size:1rem">refresh</span> Reset</button>
+          <button class="btn btn-sm btn-ghost" id="resetBtn" data-i18n="editor_reset"><span class="material-symbols-outlined" style="font-size:1rem">refresh</span> Reset</button>
         </div>
         <textarea id="codeEditor"></textarea>
         <div class="toolbar" style="margin-top:4px">
           <span class="material-symbols-outlined" style="font-size:1.1rem;color:var(--text-muted)">play_arrow</span>
-          <span class="label">Preview & Tests</span>
-          <button class="btn btn-sm btn-primary" id="runBtn">▶ Run Tests</button>
-          <button class="btn btn-sm" id="submitBtn" onclick="submitChallenge()" disabled>
+          <span class="label" data-i18n="editor_preview">Preview & Tests</span>
+          <button class="btn btn-sm btn-primary" id="runBtn" data-i18n="editor_run">▶ Run Tests</button>
+          <button class="btn btn-sm" id="submitBtn" data-i18n="editor_submit">
             <span class="material-symbols-outlined" style="font-size:1rem">check_circle</span> Submit
           </button>
         </div>
         <iframe id="preview" class="preview-frame" sandbox="allow-scripts"></iframe>
         <div class="test-results" id="testResults">
-          <div style="color:var(--text-muted)">Click "Run Tests" to check your solution.</div>
+          <div style="color:var(--text-muted)" data-i18n="editor_run_hint">Click "Run Tests" to check your solution.</div>
         </div>
       </div>
     </div>
@@ -129,7 +135,6 @@
   };
 
   let editor, currentChallenge, sbName, blockName, challengeIdx;
-  let allTestsPassed = false;
 
   function html(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
   function md(s){
@@ -150,9 +155,9 @@
   function showDemoList() {
     const keys = Object.keys(DEMO_CHALLENGES);
     document.getElementById('descContent').innerHTML =
-      '<h2>코드 에디터</h2>' +
-      '<div class="body">아래 데모 챌린지를 선택하거나 <a href="/learn/">Learn</a>에서 과목을 선택하세요.</div>' +
-      '<div class="section-label">데모 챌린지</div>' +
+      '<h2>' + __('editor_title') + '</h2>' +
+      '<div class="body">' + __('editor_choose') + '</div>' +
+      '<div class="section-label">' + __('editor_demos') + '</div>' +
       keys.map(k => `<div class="test-item" onclick="loadDemo('${k}')" style="cursor:pointer">▶ ${DEMO_CHALLENGES[k].title}</div>`).join('');
     setupDefaultEditor();
   }
@@ -169,11 +174,11 @@
     document.getElementById('descContent').innerHTML =
       '<h2>' + html(ch.title) + '</h2>' +
       '<div class="body">' + (ch.description ? md(ch.description) : '') + '</div>' +
-      (ch.seed ? '<div class="section-label">Seed Code</div><div class="seed-block">' + html(ch.seed) + '</div>' : '') +
-      (tests.length ? '<div class="section-label">Tests (' + tests.length + ')</div>' + tests.map(t => '<div class="test-item">' + html(t) + '</div>').join('') : '') +
+      (ch.seed ? '<div class="section-label">' + __('editor_seed') + '</div><div class="seed-block">' + html(ch.seed) + '</div>' : '') +
+      (tests.length ? '<div class="section-label">' + __('editor_tests') + ' (' + tests.length + ')</div>' + tests.map(t => '<div class="test-item">' + html(t) + '</div>').join('') : '') +
       '<div class="desc-actions">' +
-        '<a href="/learn/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">arrow_back</span> Back</a>' +
-        '<a href="/editor/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">list</span> Demos</a>' +
+        '<a href="/learn/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">arrow_back</span> ' + __('editor_back') + '</a>' +
+        '<a href="/editor/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">list</span> ' + __('editor_list') + '</a>' +
       '</div>';
 
     let code = ch.seed || '';
@@ -188,9 +193,9 @@
       autoCloseBrackets: true, indentUnit: 2, tabSize: 2, lineWrapping: true
     });
     editor.setValue(code);
-    allTestsPassed = false;
-    document.getElementById('submitBtn').disabled = true;
-    document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">Click "Run Tests" to check your solution.</div>';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = '✔ ' + __('editor_submit');
+    document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">' + __('editor_run_hint') + '</div>';
     document.getElementById('preview').srcdoc = '';
   }
 
@@ -204,7 +209,7 @@
   }
 
   async function loadChallenge(sb, blk, idx) {
-    document.getElementById('descContent').innerHTML = '<div class="loading">⏳ 로딩 중...</div>';
+    document.getElementById('descContent').innerHTML = '<div class="loading">⏳ ' + __('editor_loading') + '</div>';
     try {
       const res = await fetch('/data/sb-' + sb + '.json');
       const data = await res.json();
@@ -214,11 +219,11 @@
       renderChallenge(currentChallenge);
     } catch(e) {
       document.getElementById('descContent').innerHTML =
-        '<h2>연결 필요</h2>' +
-        '<div class="body">서버에서 데이터를 불러올 수 없습니다. 아래 데모 챌린지를 이용하거나 로컬 서버를 실행하세요.</div>' +
-        '<div class="section-label">데모 챌린지</div>' +
+        '<h2>' + __('editor_need_connect') + '</h2>' +
+        '<div class="body">' + __('editor_connect_desc') + '</div>' +
+        '<div class="section-label">' + __('editor_demos') + '</div>' +
         Object.keys(DEMO_CHALLENGES).map(k => `<div class="test-item" onclick="loadDemo('${k}')" style="cursor:pointer">▶ ${DEMO_CHALLENGES[k].title}</div>`).join('') +
-        '<div class="desc-actions"><a href="/learn/" class="actn">← Back to Curriculum</a></div>';
+        '<div class="desc-actions"><a href="/learn/" class="actn">← ' + __('nav_learn') + '</a></div>';
       setupDefaultEditor();
     }
   }
@@ -227,14 +232,14 @@
 
   function runTests() {
     if (!currentChallenge || !currentChallenge.tests || !currentChallenge.tests.length) {
-      document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">No tests for this challenge.</div>';
+      document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">' + __('editor_no_tests') + '</div>';
       return;
     }
     const code = editor.getValue();
     const isHtml = /<html|<\!DOCTYPE|<body|<div|<h[1-6]|<p|<span/i.test(code);
     const resultsEl = document.getElementById('testResults');
     const preview = document.getElementById('preview');
-    resultsEl.innerHTML = '<div style="color:var(--warning)">⏳ Running tests...</div>';
+    resultsEl.innerHTML = '<div style="color:var(--warning)">⏳ ' + __('editor_test_running') + '</div>';
 
     const testScript = currentChallenge.tests.map(t => 'try {' + t + '}catch(e){assert.fail(e.message);}').join('\n');
     const postMsg = 'window.parent.postMessage({type:"test-results",results:window.__results||[]},"*");';
@@ -264,12 +269,8 @@
       ).join('');
 
       if (passCount === total && total > 0) {
-        allTestsPassed = true;
-        document.getElementById('submitBtn').disabled = false;
-        resultsEl.innerHTML += '<div class="all-pass">✓ All ' + total + ' tests passed!</div>';
+        resultsEl.innerHTML += '<div class="all-pass">✓ ' + __('editor_all_pass') + '</div>';
       } else {
-        allTestsPassed = false;
-        document.getElementById('submitBtn').disabled = true;
         resultsEl.innerHTML += '<div style="color:var(--warning);margin-top:.4rem">' + passCount + '/' + total + ' passed</div>';
       }
     }
@@ -278,32 +279,32 @@
   function resetCode() {
     if (currentChallenge) {
       editor.setValue(currentChallenge.seed || '');
-      document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">Code reset.</div>';
+      document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">' + __('editor_reset_hint') + '</div>';
       document.getElementById('preview').srcdoc = '';
-      allTestsPassed = false;
-      document.getElementById('submitBtn').disabled = true;
     }
   }
 
-  function submitChallenge() {
-    if (!allTestsPassed) return;
-    const id = currentChallenge.id || currentChallenge.dashedName;
+  function doneChallenge() {
+    const id = currentChallenge?.id || currentChallenge?.dashedName;
     if (!id) return;
     const completed = JSON.parse(localStorage.getItem('learnCompleted') || '{}');
     completed[id] = true;
     localStorage.setItem('learnCompleted', JSON.stringify(completed));
     const btn = document.getElementById('submitBtn');
-    btn.textContent = '✅ Completed!';
+    btn.textContent = '✅ ' + __('editor_completed');
     btn.disabled = true;
   }
 
+  document.getElementById('submitBtn').addEventListener('click', doneChallenge);
   document.getElementById('resetBtn').addEventListener('click', resetCode);
   document.getElementById('runBtn').addEventListener('click', runTests);
+  initLang();
   (function() {
     const u = JSON.parse(localStorage.getItem('fcc_user') || 'null');
     const a = document.getElementById('navAuth');
     if (u) { a.textContent = u.name || u.email || 'Profile'; a.href = '/profile/'; }
   })();
   </script>
+  <footer><p data-i18n="footer_right">© 2026 AI Developer Hub</p></footer>
 </body>
 </html>

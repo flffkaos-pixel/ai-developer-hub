@@ -209,6 +209,13 @@ footer a{color:var(--primary)}
   border-radius:999px;
   font-size:.85rem;font-weight:600
 }
+#langSelect{
+  background:transparent;color:var(--text-muted);border:1px solid var(--border);
+  border-radius:6px;padding:4px 8px;font-size:.78rem;cursor:pointer;
+  font-family:'Inter',sans-serif;outline:none
+}
+#langSelect:hover{color:var(--text);border-color:var(--primary)}
+#langSelect option{background:var(--surface-solid);color:var(--text)}
 
 /* ─── Responsive ─── */
 @media(max-width:768px){
