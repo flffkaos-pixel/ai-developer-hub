@@ -77,13 +77,13 @@
         <div class="toolbar">
           <span class="material-symbols-outlined" style="font-size:1.1rem;color:var(--text-muted)">code</span>
           <span class="label" id="langLabel">JavaScript</span>
-          <button class="btn btn-sm btn-ghost" onclick="resetCode()"><span class="material-symbols-outlined" style="font-size:1rem">refresh</span> Reset</button>
+          <button class="btn btn-sm btn-ghost" id="resetBtn"><span class="material-symbols-outlined" style="font-size:1rem">refresh</span> Reset</button>
         </div>
         <textarea id="codeEditor"></textarea>
         <div class="toolbar" style="margin-top:4px">
           <span class="material-symbols-outlined" style="font-size:1.1rem;color:var(--text-muted)">play_arrow</span>
           <span class="label">Preview & Tests</span>
-          <button class="btn btn-sm btn-primary" onclick="runTests()">▶ Run Tests</button>
+          <button class="btn btn-sm btn-primary" id="runBtn">▶ Run Tests</button>
           <button class="btn btn-sm" id="submitBtn" onclick="submitChallenge()" disabled>
             <span class="material-symbols-outlined" style="font-size:1rem">check_circle</span> Submit
           </button>
@@ -223,7 +223,7 @@
     }
   }
 
-  const ASSERT_POLYFILL = 'window.__results=[];window.__idx=0;window.assert={_pass:function(m){window.__results.push({pass:true,msg:m});},_fail:function(m){window.__results.push({pass:false,msg:m});},isTrue:function(v,m){var i=++window.__idx;v?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected true, got "+v);},isFalse:function(v,m){var i=++window.__idx;!v?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected false");},equal:function(a,b,m){var i=++window.__idx;a==b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected "+b+", got "+a);},notEqual:function(a,b,m){var i=++window.__idx;a!=b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": should not equal "+b);},strictEqual:function(a,b,m){var i=++window.__idx;a===b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected === "+b+", got "+a);},exists:function(v,m){var i=++window.__idx;v!=null?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected value to exist");},isArray:function(v,m){var i=++window.__idx;Array.isArray(v)?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected array");},match:function(s,r,m){var i=++window.__idx;r.test(s)?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected match");},include:function(a,v,m){var i=++window.__idx;typeof a.indexOf==="function"&&a.indexOf(v)>-1?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+":"+v+" not in array");},throws:function(f,m){var i=++window.__idx;try{f();this._fail(m||"#"+i+": expected throw");}catch(e){this._pass(m||"#"+i+": ok");}},typeOf:function(v,t,m){var i=++window.__idx;typeof v===t?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected "+t+", got "+typeof v);}};';
+  const ASSERT_POLYFILL = 'window.__results=[];window.__idx=0;window.assert={_pass:function(m){window.__results.push({pass:true,msg:m});},_fail:function(m){window.__results.push({pass:false,msg:m});},isTrue:function(v,m){var i=++window.__idx;v?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected true, got "+v);},isFalse:function(v,m){var i=++window.__idx;!v?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected false");},equal:function(a,b,m){var i=++window.__idx;a==b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected "+b+", got "+a);},notEqual:function(a,b,m){var i=++window.__idx;a!=b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": should not equal "+b);},strictEqual:function(a,b,m){var i=++window.__idx;a===b?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected === "+b+", got "+a);},exists:function(v,m){var i=++window.__idx;v!=null?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected value to exist");},isArray:function(v,m){var i=++window.__idx;Array.isArray(v)?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected array");},match:function(s,r,m){var i=++window.__idx;r.test(s)?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected match");},include:function(a,v,m){var i=++window.__idx;typeof a.indexOf==="function"&&a.indexOf(v)>-1?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+":"+v+" not in array");},throws:function(f,m){var i=++window.__idx;try{f();this._fail(m||"#"+i+": expected throw");}catch(e){this._pass(m||"#"+i+": ok");}},typeOf:function(v,t,m){var i=++window.__idx;typeof v===t?this._pass(m||"#"+i+": ok"):this._fail(m||"#"+i+": expected "+t+", got "+typeof v);},fail:function(m){window.__results.push({pass:false,msg:"ASSERT FAIL: "+m});}};';
 
   function runTests() {
     if (!currentChallenge || !currentChallenge.tests || !currentChallenge.tests.length) {
@@ -241,10 +241,12 @@
     const fullScript = ASSERT_POLYFILL + '\n' + testScript + '\n' + postMsg;
 
     if (isHtml) {
-      const wrapped = code.replace('</body>', '<script>' + fullScript + '</script>\n</body>');
-      preview.srcdoc = wrapped.includes('</body>') ? wrapped : code + '<script>' + fullScript + '</script>';
+      const cl = '<\/script>';
+      const wrapped = code.replace('</body>', '<script>' + fullScript + cl + '\n</body>');
+      preview.srcdoc = wrapped.includes('</body>') ? wrapped : code + '<script>' + fullScript + cl;
     } else {
-      preview.srcdoc = '<!DOCTYPE html><html><head><script>' + fullScript + '</script></head><body></body></html>';
+      const cl = '<\/script>';
+      preview.srcdoc = '<!DOCTYPE html><html><head><script>' + fullScript + cl + '</head><body></body></html>';
     }
   }
 
@@ -303,6 +305,8 @@
     } catch (e) { alert('Error saving'); }
   }
 
+  document.getElementById('resetBtn').addEventListener('click', resetCode);
+  document.getElementById('runBtn').addEventListener('click', runTests);
   (function() {
     const u = JSON.parse(localStorage.getItem('fcc_user') || 'null');
     const a = document.getElementById('navAuth');
