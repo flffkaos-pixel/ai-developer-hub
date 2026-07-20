@@ -285,24 +285,16 @@
     }
   }
 
-  async function submitChallenge() {
+  function submitChallenge() {
     if (!allTestsPassed) return;
-    const token = localStorage.getItem('fcc_token');
-    const userData = localStorage.getItem('fcc_user');
-    if (!token || !userData) { alert('Login to save progress'); return; }
-    try {
-      const user = JSON.parse(userData);
-      const res = await fetch('/api/progress', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, challengeId: currentChallenge.id || currentChallenge.dashedName, title: currentChallenge.title })
-      });
-      const data = await res.json();
-      if (data.status === 'ok' || data.status === 'already_completed') {
-        const btn = document.getElementById('submitBtn');
-        btn.textContent = '✅ Completed!';
-        btn.disabled = true;
-      }
-    } catch (e) { alert('Error saving'); }
+    const id = currentChallenge.id || currentChallenge.dashedName;
+    if (!id) return;
+    const completed = JSON.parse(localStorage.getItem('learnCompleted') || '{}');
+    completed[id] = true;
+    localStorage.setItem('learnCompleted', JSON.stringify(completed));
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = '✅ Completed!';
+    btn.disabled = true;
   }
 
   document.getElementById('resetBtn').addEventListener('click', resetCode);

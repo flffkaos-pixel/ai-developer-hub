@@ -145,10 +145,10 @@ function renderDetail(name, blocks) {
     if (!challenges.length) totalAll += cnt;
     totalDone += done;
     const status = done === cnt && cnt > 0 ? 'all' : done > 0 ? 'some' : 'none';
-    return '<div class="block-row" onclick="openBlock(\'' + name + '\',\'' + b.name.replace(/'/g,"\\'") + '\')">' +
+      return '<div class="block-row" onclick="openBlock(\'' + name + '\',\'' + b.name.replace(/'/g,"\\'") + '\')">' +
       '<span class="dot ' + status + '"></span>' +
       '<div class="flex">' +
-        '<div class="name">' + b.name.replace(/-/g, ' ') + '</div>' +
+        '<div class="name">' + t(b.name) + '</div>' +
         '<div class="sub">' + cnt + '개 챌린지' + (done > 0 ? ' · ' + done + ' 완료' : '') + '</div>' +
       '</div>' +
       '<span class="material-symbols-outlined" style="color:var(--text-muted);font-size:1.1rem">chevron_right</span>' +
@@ -170,7 +170,7 @@ function renderDetail(name, blocks) {
 async function openBlock(sbName, blockName) {
   document.getElementById('detailView').style.display = 'none';
   document.getElementById('challengeView').style.display = 'block';
-  document.getElementById('bcLabel').textContent = t(sbName) + ' › ' + blockName.replace(/-/g, ' ');
+  document.getElementById('bcLabel').textContent = t(sbName) + ' › ' + t(blockName);
   document.getElementById('backLabel').textContent = t(sbName);
   document.getElementById('backToBlocks').onclick = function(){ showBlocks(sbName); };
   document.getElementById('challengeContent').innerHTML = '<div class="loading">⏳ 로딩 중...</div>';
@@ -202,7 +202,7 @@ function renderChallenges(challenges, sbName, blockName) {
   }).join('');
 
   document.getElementById('challengeContent').innerHTML =
-    '<h2 style="margin-bottom:4px">' + blockName.replace(/-/g, ' ') + '</h2>' +
+    '<h2 style="margin-bottom:4px">' + t(blockName) + '</h2>' +
     '<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px">' + total + '개 챌린지' + (done > 0 ? ' · ' + done + ' 완료' : '') + '</div>' +
     '<div>' + list + '</div>';
 }
