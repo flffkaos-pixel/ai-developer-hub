@@ -42,7 +42,7 @@ var _dict = {
   editor_back: ['뒤로', 'Back', '戻る'],
   editor_list: ['목록', 'List', '一覧'],
   editor_reset: ['초기화', 'Reset', 'リセット'],
-  editor_run: ['테스트 실행', 'Run Tests', 'テスト実行'],
+  editor_run: ['▶ 테스트 실행', '▶ Run Tests', '▶ テスト実行'],
   editor_submit: ['제출', 'Submit', '提出'],
   editor_completed: ['완료!', 'Completed!', '完了！'],
   editor_preview: ['미리보기 & 테스트', 'Preview & Tests', 'プレビュー＆テスト'],
@@ -73,8 +73,11 @@ function setLang(lang) {
     var val = t(el.getAttribute('data-i18n'));
     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
       el.placeholder = val;
-    } else {
+    } else if (el.children.length === 0) {
       el.textContent = val;
+    } else {
+      var tn = Array.from(el.childNodes).find(function(n){ return n.nodeType === 3; });
+      if (tn) tn.textContent = val;
     }
   });
   document.querySelectorAll('[data-i18n-title]').forEach(function(el){
