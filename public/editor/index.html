@@ -51,6 +51,7 @@
   }
   </style>
   <script src="/lang.js"></script>
+  <script src="/data/curriculum.js"></script>
 </head>
 <body>
   <nav>
@@ -135,6 +136,8 @@
   };
 
   let editor, currentChallenge, sbName, blockName, challengeIdx;
+  let curTranslations = window.__curriculum?.translations || {};
+  function tr(name) { return curTranslations[name] || name.replace(/-/g, ' '); }
 
   function html(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
   function md(s){
@@ -171,15 +174,19 @@
 
   function renderChallenge(ch) {
     const tests = Array.isArray(ch.tests) ? ch.tests : [];
+    const sbLabel = sbName ? tr(sbName) : '';
+    const blLabel = blockName ? tr(blockName) : '';
     document.getElementById('descContent').innerHTML =
+      (sbLabel ? '<div style="font-size:.75rem;color:var(--text-muted);margin-bottom:2px">' + sbLabel + ' › ' + blLabel + '</div>' : '') +
       '<h2>' + html(ch.title) + '</h2>' +
-      '<div class="body">' + (ch.description ? md(ch.description) : '') + '</div>' +
+      '<div class="body" id="descBody">' + (ch.description ? md(ch.description) : '') + '</div>' +
       (ch.seed ? '<div class="section-label">' + __('editor_seed') + '</div><div class="seed-block">' + html(ch.seed) + '</div>' : '') +
       (tests.length ? '<div class="section-label">' + __('editor_tests') + ' (' + tests.length + ')</div>' + tests.map(t => '<div class="test-item">' + html(t) + '</div>').join('') : '') +
       '<div class="desc-actions">' +
         '<a href="/learn/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">arrow_back</span> ' + __('editor_back') + '</a>' +
         '<a href="/editor/" class="actn"><span class="material-symbols-outlined" style="font-size:1rem">list</span> ' + __('editor_list') + '</a>' +
-      '</div>';
+      '</div>' +
+      '<div style="font-size:.72rem;color:var(--text-muted);margin-top:8px" data-i18n="editor_content_note">Content: English (original) / 한국어 / 日本語</div>';
 
     let code = ch.seed || '';
     let mode = 'javascript';
@@ -197,6 +204,8 @@
     document.getElementById('submitBtn').textContent = '✔ ' + __('editor_submit');
     document.getElementById('testResults').innerHTML = '<div style="color:var(--text-muted)">' + __('editor_run_hint') + '</div>';
     document.getElementById('preview').srcdoc = '';
+    var curLang = document.getElementById('langSelect')?.value || localStorage.getItem('fcc_lang') || 'ko';
+    if(curLang !== 'en') setTimeout(function(){ translateDesc(curLang); }, 300);
   }
 
   function setupDefaultEditor() {
@@ -284,6 +293,28 @@
     }
   }
 
+  var _transCache = JSON.parse(localStorage.getItem('transCache') || '{}');
+  function translateDesc(lang){
+    if(lang === 'en' || !currentChallenge) return;
+    var body = document.getElementById('descBody');
+    if(!body) return;
+    var key = (currentChallenge.id || currentChallenge.dashedName) + '_' + lang;
+    if(_transCache[key]){ body.innerHTML = _transCache[key]; return; }
+    var text = currentChallenge.description || '';
+    if(!text || text.length < 10) return;
+    var pair = 'en|' + (lang === 'ko' ? 'ko' : 'ja');
+    fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text.slice(0,500)) + '&langpair=' + pair)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && d.responseData && d.responseData.translatedText){
+        var t = d.responseData.translatedText;
+        body.innerHTML = md(t);
+        _transCache[key] = t;
+        localStorage.setItem('transCache', JSON.stringify(_transCache));
+      }
+    }).catch(function(){});
+  }
+
   function doneChallenge() {
     const id = currentChallenge?.id || currentChallenge?.dashedName;
     if (!id) return;
@@ -295,6 +326,11 @@
     btn.disabled = true;
   }
 
+  var _origSetLang = window.setLang;
+  window.setLang = function(lang){
+    _origSetLang(lang);
+    translateDesc(lang);
+  };
   document.getElementById('submitBtn').addEventListener('click', doneChallenge);
   document.getElementById('resetBtn').addEventListener('click', resetCode);
   document.getElementById('runBtn').addEventListener('click', runTests);

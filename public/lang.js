@@ -54,6 +54,7 @@ var _dict = {
   editor_test_running: ['테스트 실행 중...', 'Running tests...', 'テスト実行中...'],
   editor_all_pass: ['모든 테스트 통과!', 'All tests passed!', '全テスト合格！'],
   editor_no_tests: ['이 챌린지에 테스트가 없습니다.', 'No tests for this challenge.', 'このチャレンジにテストはありません。'],
+  editor_content_note: ['한국어 번역: AI 자동 번역', 'English (original)', '日本語翻訳: AI自動翻訳'],
 
   footer_right: ['© 2026 AI Developer Hub', '© 2026 AI Developer Hub', '© 2026 AI Developer Hub']
 };
