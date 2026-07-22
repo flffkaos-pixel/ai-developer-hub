@@ -137,7 +137,8 @@
 
   let editor, currentChallenge, sbName, blockName, challengeIdx;
   let curTranslations = window.__curriculum?.translations || {};
-  function tr(name) { return curTranslations[name] || name.replace(/-/g, ' '); }
+  var langIdx = {ko:0, en:1, ja:2}[(localStorage.getItem('fcc_lang')||'en')]||1;
+  function tr(name) { var a=curTranslations[name]; return Array.isArray(a) ? a[langIdx]||name.replace(/-/g,' ') : a||name.replace(/-/g,' '); }
 
   function html(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
   function md(s){
@@ -330,6 +331,7 @@
   window.setLang = function(lang){
     _origSetLang(lang);
     translateDesc(lang);
+    if (currentChallenge) renderChallenge(currentChallenge);
   };
   document.getElementById('submitBtn').addEventListener('click', doneChallenge);
   document.getElementById('resetBtn').addEventListener('click', resetCode);

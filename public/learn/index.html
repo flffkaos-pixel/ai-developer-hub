@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Developer Hub - 학습</title>
-<link rel="stylesheet" href="/style.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,200" />
-<script src="/data/curriculum.js"></script>
+  <title data-i18n="page_learn">AI Developer Hub - 학습</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,200" />
+  <script src="/data/curriculum.js"></script>
 <style>
 .cat-header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:var(--transition);margin-bottom:6px;user-select:none}
 .cat-header:hover{border-color:var(--primary);background:var(--surface-hover)}
@@ -109,7 +109,8 @@ let subjectCat = window.__curriculum?.subjectCategory || {};
 let activeSubject = null;
 let activeBlockData = null;
 
-function t(name) { return translations[name] || name.replace(/-/g, ' '); }
+  function langIdx(){ return {ko:0, en:1, ja:2}[(localStorage.getItem('fcc_lang')||'en')]||1; }
+  function t(name) { var a=translations[name]; var i=langIdx(); return Array.isArray(a) ? a[i]||name.replace(/-/g,' ') : a||name.replace(/-/g,' '); }
 function catLang(){ return localStorage.getItem('fcc_lang') || 'ko'; }
 function ct(cat){
   var idx = catLang() === 'ko' ? 0 : catLang() === 'en' ? 1 : 2;
@@ -266,6 +267,15 @@ function showMain() {
 
 initLang();
 renderAll();
+var _origSetLang2 = window.setLang;
+window.setLang = function(lang){
+  _origSetLang2(lang);
+  renderAll();
+  if (activeSubject) {
+    activeSubject = null;
+    showMain();
+  }
+};
 </script>
 </body>
 </html>

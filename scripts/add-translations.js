@@ -410,7 +410,22 @@ json.subjects.forEach(sb => {
   }
 });
 
-json.translations = translations;
+// Convert to 3-element arrays [ko, en, ja]
+var arrTrans = {};
+Object.keys(translations).forEach(function(k){
+  arrTrans[k] = [translations[k], k.replace(/-/g, ' '), translations[k]];
+});
+// Add Japanese translations for key subjects
+arrTrans['responsive-web-design'] = ['반응형 웹 디자인', 'Responsive Web Design', 'レスポンシブウェブデザイン'];
+arrTrans['javascript-algorithms-and-data-structures'] = ['JavaScript 알고리즘 및 자료구조', 'JavaScript Algorithms and Data Structures', 'JavaScriptアルゴリズムとデータ構造'];
+arrTrans['basic-html-and-html5'] = ['HTML5 기초', 'Basic HTML and HTML5', 'HTML5基礎'];
+arrTrans['basic-css'] = ['CSS 기초', 'Basic CSS', 'CSS基礎'];
+arrTrans['applied-visual-design'] = ['시각 디자인 응용', 'Applied Visual Design', 'ビジュアルデザイン応用'];
+arrTrans['applied-accessibility'] = ['접근성 적용', 'Applied Accessibility', 'アクセシビリティ応用'];
+arrTrans['css-flexbox'] = ['CSS 플렉스박스', 'CSS Flexbox', 'CSSフレックスボックス'];
+arrTrans['css-grid'] = ['CSS 그리드', 'CSS Grid', 'CSSグリッド'];
+
+json.translations = arrTrans;
 
 const out = 'window.__curriculum = ' + JSON.stringify(json) + ';';
 fs.writeFileSync(dataFile, out, 'utf8');
