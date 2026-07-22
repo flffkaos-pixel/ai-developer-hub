@@ -33,6 +33,8 @@ var _dict = {
   learn_no_challenges: ['챌린지 목록을 불러올 수 없습니다.', 'Could not load challenges.', 'チャレンジを読み込めませんでした。'],
   learn_back_all: ['모든 과목', 'All Subjects', '全科目'],
   learn_progress: ['개 완료', ' completed', ' 完了'],
+  learn_subjects: ['과목', ' subjects', '科目'],
+  learn_blocks: ['블록', ' blocks', 'ブロック'],
 
   editor_title: ['코드 에디터', 'Code Editor', 'コードエディタ'],
   editor_choose: ['아래 데모 챌린지를 선택하거나 Learn에서 과목을 선택하세요.', 'Choose a demo challenge or pick a subject from Learn.', 'デモチャレンジを選ぶか、Learnから科目を選んでください。'],
